@@ -12,41 +12,56 @@ public class PlayerMove : MonoBehaviour
     Animator anim;
     public float raycastDistance = 1.0f;
 
+    GameObject getJoystick;
+    bool getIsInput;
+
     void Start()
     {
         rb = GetComponent<Rigidbody>(); // Rigidbody 컴포넌트 참조
         anim = GetComponent<Animator>();
+        getJoystick = GameObject.FindWithTag("Joystick");
+        if (getJoystick != null)
+            getIsInput = getJoystick.GetComponent<Joystick>().GetIsInput();
     }
 
     void FixedUpdate()
     {
-        Move();
+        if (getJoystick.GetComponent<Joystick>().GetIsInput())
+        {
+            Vector2 getinputVector = getJoystick.GetComponent<Joystick>().GetinputVector();
+            JoystickMove(getinputVector);
+        }
+        //Move();
         JumpAfter();
     }
 
-    private void Move()
-    {
-        if (anim.GetBool("isAttack") == true)
-            return;
-        // 방향키 입력을 통해 이동 벡터 계산
-        float horizontal = Input.GetAxis("Horizontal"); // 좌우 방향
-        float vertical = Input.GetAxis("Vertical");     // 앞뒤 방향
+    //private void Move()
+    //{
+    //    if (anim.GetBool("isAttack") == true)
+    //        return;
+    //    // 방향키 입력을 통해 이동 벡터 계산
+    //    float horizontal = Input.GetAxis("Horizontal"); // 좌우 방향
+    //    float vertical = Input.GetAxis("Vertical");     // 앞뒤 방향
 
-        Vector3 movement = new Vector3(horizontal, 0, vertical).normalized; // 정규화된 벡터
-        Vector3 desiredVelocity = movement * speed; // 원하는 속도
+    //    Vector3 movement = new Vector3(horizontal, 0, vertical).normalized; // 정규화된 벡터
+    //    Vector3 desiredVelocity = movement * speed; // 원하는 속도
 
-        if(desiredVelocity != Vector3.zero)
-        {
-            anim.SetBool("isWalk", true);
-        }
-        else
-            anim.SetBool("isWalk", false);
+    //    if(desiredVelocity != Vector3.zero)
+    //    {
+    //        anim.SetBool("isWalk", true);
+    //        Debug.Log("movement : " + movement.x + " /// " + movement.y + " /// " + movement.z);
+    //        Debug.Log("desiredVelocity : " + desiredVelocity.x + " /// " + desiredVelocity.y + " /// " + desiredVelocity.z);
 
-        // 플레이어의 Rigidbody 속도를 원하는 속도로 설정
-        rb.velocity = new Vector3(desiredVelocity.x, rb.velocity.y, desiredVelocity.z);
 
-        transform.LookAt(transform.position + movement);
-    }
+    //    }
+    //    else
+    //        anim.SetBool("isWalk", false);
+
+    //    // 플레이어의 Rigidbody 속도를 원하는 속도로 설정
+    //    rb.velocity = new Vector3(desiredVelocity.x, rb.velocity.y, desiredVelocity.z);
+
+    //    transform.LookAt(transform.position + movement);
+    //}
 
     public void Sprint()
     {
@@ -116,5 +131,31 @@ public class PlayerMove : MonoBehaviour
     public void DoubleJumpEnd()
     {
         anim.SetBool("isDoubleJump", false);
+    }
+
+    public void JoystickMove(Vector2 inputVector)
+    {
+        Vector3 movement = new Vector3(inputVector.x, 0, inputVector.y); // 정규화된 벡터
+        Vector3 desiredVelocity = movement * speed; // 원하는 속도
+
+        Debug.Log("movement : " + movement.x + " /// " + movement.y + " /// " + movement.z);
+        Debug.Log("desiredVelocity : " + desiredVelocity.x + " /// " + desiredVelocity.y + " /// " + desiredVelocity.z);
+
+        if (desiredVelocity != Vector3.zero)
+        {
+            anim.SetBool("isWalk", true);
+        }
+        else
+            anim.SetBool("isWalk", false);
+
+        // 플레이어의 Rigidbody 속도를 원하는 속도로 설정
+         rb.velocity = new Vector3(desiredVelocity.x, rb.velocity.y, desiredVelocity.z);
+
+        transform.LookAt(transform.position + movement);
+    }
+
+    public void StopWalk()
+    {
+        anim.SetBool("isWalk", false);
     }
 }
