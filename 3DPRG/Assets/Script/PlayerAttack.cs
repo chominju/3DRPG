@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class PlayerAttack : MonoBehaviour
 {
-
     Animator anim;
     bool isComboExist = false;
     bool isComboEnable = false;
@@ -45,7 +44,7 @@ public class PlayerAttack : MonoBehaviour
         isComboExist = false;
         comboIndex++;
 
-        anim.SetTrigger("nextCombo");
+        anim.SetTrigger("NextCombo");
     }
 
     public void AttackEnd()
@@ -57,5 +56,11 @@ public class PlayerAttack : MonoBehaviour
             comboIndex = 0;
 
         }
+    }
+
+    public void ComboAttackEnd()
+    {
+        anim.SetBool("isAttack", false);
+        comboIndex = 0;
     }
 }

@@ -7,31 +7,32 @@ public class PlayerMove : MonoBehaviour
     public float speed = 5f; // 이동 속도
     
     public float jumpSpeed = 20;
+    public float diveRollSpeed = 12;
     int jumpCount = 0;
     private Rigidbody rb;
     Animator anim;
     public float raycastDistance = 1.0f;
 
     GameObject getJoystick;
-    bool getIsInput;
 
     void Start()
     {
         rb = GetComponent<Rigidbody>(); // Rigidbody 컴포넌트 참조
         anim = GetComponent<Animator>();
         getJoystick = GameObject.FindWithTag("Joystick");
-        if (getJoystick != null)
-            getIsInput = getJoystick.GetComponent<Joystick>().GetIsInput();
     }
 
     void FixedUpdate()
     {
-        if (getJoystick.GetComponent<Joystick>().GetIsInput())
+        if (getJoystick.GetComponent<Joystick>().GetIsInput() && anim.GetBool("isDiveRoll")==false)
         {
             Vector2 getinputVector = getJoystick.GetComponent<Joystick>().GetinputVector();
             JoystickMove(getinputVector);
         }
+        else
+            anim.SetBool("isWalk", false);
         //Move();
+      
         JumpAfter();
     }
 
@@ -46,7 +47,7 @@ public class PlayerMove : MonoBehaviour
     //    Vector3 movement = new Vector3(horizontal, 0, vertical).normalized; // 정규화된 벡터
     //    Vector3 desiredVelocity = movement * speed; // 원하는 속도
 
-    //    if(desiredVelocity != Vector3.zero)
+    //    if (desiredVelocity != Vector3.zero)
     //    {
     //        anim.SetBool("isWalk", true);
     //        Debug.Log("movement : " + movement.x + " /// " + movement.y + " /// " + movement.z);
@@ -77,40 +78,73 @@ public class PlayerMove : MonoBehaviour
         }
     }
 
+    public void DiveRoll()
+    {
+        if (anim.GetBool("isJump") == true)
+            return;
+
+        anim.SetBool("isDiveRoll", true);
+
+        Vector3 cameraDirection = gameObject.transform.forward;//camera.GetComponent<Transform>().forward;
+
+        Vector3 movement = cameraDirection.normalized; // 정규화된 벡터
+        Vector3 desiredVelocity = movement * diveRollSpeed; // 원하는 속도
+
+        rb.velocity = new Vector3(desiredVelocity.x, 0, desiredVelocity.z);
+
+        transform.LookAt(transform.position + movement);
+    }
+
+    public void DiveRollEnd()
+    {
+        anim.SetBool("isDiveRoll", false);
+        rb.velocity = Vector3.zero;
+    }
+
+
     public void Jump()
     {
-        if (jumpCount >= 2)
+        Debug.Log("Jump Count : " + jumpCount);
+        if (jumpCount >= 2|| IsPlayerOnGround())
             return;
 
         if (anim.GetBool("isWalk") == true)
             anim.SetBool("isWalk", false);
 
-        if (jumpCount == 0)
+        anim.SetBool("isJump", true);
+        if (jumpCount == 1)
         {
-            anim.SetBool("isJump", true);
-        }
-        else if (jumpCount == 1)
-        {
-            RaycastHit hit;
-            if (Physics.Raycast(transform.position, Vector3.down, out hit, raycastDistance))
+            if (IsPlayerOnGround())
                 return;
-            //anim.SetTrigger("DoubleJump");
             anim.SetBool("isDoubleJump",true);
         }
         jumpCount++;
         rb.AddForce(Vector3.up * jumpSpeed, ForceMode.Impulse);
     }
 
-   void JumpAfter()
+    public bool IsPlayerOnGround()
     {
         RaycastHit hit;
-        if (Physics.Raycast(transform.position, Vector3.down, out hit, raycastDistance))
+        return Physics.Raycast(transform.position, Vector3.down, out hit, raycastDistance);
+    }
+
+   void JumpAfter()
+    {
+        // 점프 중 일때
+        if (anim.GetBool("isJump") == true)
         {
-            anim.SetBool("isGround", true);
-        }
-        else
-        {
-            anim.SetBool("isGround", false);
+            if (rb.velocity.y >= 0.0f)
+                return;
+            if(IsPlayerOnGround())
+            {
+                anim.SetBool("isGround", true);
+                //anim.SetBool("isJump", false);
+                jumpCount = 0;
+            }
+            else
+            {
+                anim.SetBool("isGround", false);
+            }
         }
     }
 
@@ -120,6 +154,7 @@ public class PlayerMove : MonoBehaviour
         {
             jumpCount = 0;
             anim.SetBool("isJump", false);
+            anim.SetBool("isGround", false);
         }
     }
 
@@ -141,12 +176,13 @@ public class PlayerMove : MonoBehaviour
         Debug.Log("movement : " + movement.x + " /// " + movement.y + " /// " + movement.z);
         Debug.Log("desiredVelocity : " + desiredVelocity.x + " /// " + desiredVelocity.y + " /// " + desiredVelocity.z);
 
-        if (desiredVelocity != Vector3.zero)
+        if (desiredVelocity == Vector3.zero || anim.GetBool("isAttack")==true || getJoystick.GetComponent<Joystick>().GetIsInput()==false)
         {
-            anim.SetBool("isWalk", true);
+            anim.SetBool("isWalk", false);
+            return;
         }
         else
-            anim.SetBool("isWalk", false);
+            anim.SetBool("isWalk", true);
 
         // 플레이어의 Rigidbody 속도를 원하는 속도로 설정
          rb.velocity = new Vector3(desiredVelocity.x, rb.velocity.y, desiredVelocity.z);
@@ -157,5 +193,11 @@ public class PlayerMove : MonoBehaviour
     public void StopWalk()
     {
         anim.SetBool("isWalk", false);
+        rb.velocity = Vector3.zero;
+    }
+
+    public void Hit()
+    {
+        Debug.Log("Hit!");
     }
 }
