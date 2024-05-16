@@ -80,7 +80,7 @@ public class PlayerMove : MonoBehaviour
 
     public void DiveRoll()
     {
-        if (anim.GetBool("isJump") == true)
+        if (anim.GetBool("isJump") == true || anim.GetBool("isDiveRoll"))
             return;
 
         anim.SetBool("isDiveRoll", true);
@@ -98,6 +98,7 @@ public class PlayerMove : MonoBehaviour
     public void DiveRollEnd()
     {
         anim.SetBool("isDiveRoll", false);
+        Debug.Log("DiveRollEnd");
         rb.velocity = Vector3.zero;
     }
 
@@ -173,9 +174,6 @@ public class PlayerMove : MonoBehaviour
         Vector3 movement = new Vector3(inputVector.x, 0, inputVector.y); // 정규화된 벡터
         Vector3 desiredVelocity = movement * speed; // 원하는 속도
 
-        Debug.Log("movement : " + movement.x + " /// " + movement.y + " /// " + movement.z);
-        Debug.Log("desiredVelocity : " + desiredVelocity.x + " /// " + desiredVelocity.y + " /// " + desiredVelocity.z);
-
         if (desiredVelocity == Vector3.zero || anim.GetBool("isAttack")==true || getJoystick.GetComponent<Joystick>().GetIsInput()==false)
         {
             anim.SetBool("isWalk", false);
@@ -201,3 +199,4 @@ public class PlayerMove : MonoBehaviour
         Debug.Log("Hit!");
     }
 }
+    

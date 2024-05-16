@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 3414c515c6a2f334da03b4ab3d547691
+guid: 69f3b1b43eb337548a8633b7b82d6fc6
 ModelImporter:
   serializedVersion: 21300
   internalIDToNameTable:
@@ -370,7 +370,10 @@ ModelImporter:
     rigImportErrors: 
     rigImportWarnings: 
     animationImportErrors: 
-    animationImportWarnings: 
+    animationImportWarnings: "\nClip 'Take 001' has import animation warnings that
+      might lower retargeting quality:\nNote: Activate translation DOF on avatar
+      to improve retargeting quality.\n\t'B_Spine' has translation animation that
+      will be discarded.\n"
     animationRetargetingWarnings: 
     animationDoRetargetingWarnings: 0
     importAnimatedCustomProperties: 0
@@ -408,29 +411,36 @@ ModelImporter:
       bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
       curves: []
       events:
-      - time: 0.25567377
+      - time: 0.25319147
         functionName: ComboEnable
         data: 
         objectReferenceParameter: {instanceID: 0}
         floatParameter: 0
         intParameter: 0
         messageOptions: 0
-      - time: 0.8265957
+      - time: 0.829078
         functionName: ComboDisable
         data: 
         objectReferenceParameter: {instanceID: 0}
         floatParameter: 0
         intParameter: 0
         messageOptions: 0
-      - time: 0.9234042
+      - time: 0.920922
         functionName: ComboExist
         data: 
         objectReferenceParameter: {instanceID: 0}
         floatParameter: 0
         intParameter: 0
         messageOptions: 0
-      - time: 0.9762067
+      - time: 0.9759818
         functionName: AttackEnd
+        data: 
+        objectReferenceParameter: {instanceID: 0}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
+      - time: 0.99774265
+        functionName: ComboAttackEnd
         data: 
         objectReferenceParameter: {instanceID: 0}
         floatParameter: 0

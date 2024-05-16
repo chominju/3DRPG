@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Ground
   - Joystick
+  - Hand
   layers:
   - Default
   - TransparentFX
@@ -13,8 +14,8 @@ TagManager:
   - 
   - Water
   - UI
-  - 
-  - 
+  - Hand
+  - Terrain
   - 
   - 
   - 
