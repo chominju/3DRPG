@@ -61,14 +61,14 @@ public class Joystick : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
         lever.anchoredPosition = clampedDir;
         inputVector = clampedDir / leverRange;
 
-        Debug.Log("inputVector : " + inputVector.x + " /// " + inputVector.y);
+        //Debug.Log("inputVector : " + inputVector.x + " /// " + inputVector.y);
     }
 
     public void OnEndDrag(PointerEventData eventData)
     {
         lever.anchoredPosition = Vector2.zero;
         isInput = false;
-        getPlayer.GetComponent<PlayerMove>().StopWalk();
+        //getPlayer.GetComponent<PlayerMove>().StopWalk();
     }
 
     void Update()

@@ -10,7 +10,6 @@ public class Mover : MonoBehaviour
     public float jumpSpeed = 10;
     Animator anim;
 
-
     void Start()
     {
         rb = GetComponent<Rigidbody>(); // Rigidbody 컴포넌트 참조
