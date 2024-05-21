@@ -21,7 +21,7 @@ public class PlayerMove : MonoBehaviour
     private Transform cameraArm;
 
     int jumpMaxCount;
-    bool jumpClickFirst;
+    bool isJumpClickFirst;
     bool isDiveRoll;
     bool isJump;
     bool isDoubleJump;
@@ -45,7 +45,7 @@ public class PlayerMove : MonoBehaviour
         //rb = GetComponent<Rigidbody>(); // Rigidbody 컴포넌트 참조
         anim = GetComponent<Animator>();
         getJoystick = GameObject.FindWithTag("Joystick");
-        jumpClickFirst = false;
+        isJumpClickFirst = false;
         isDiveRoll = false;
         isDoubleJump = false;
         jumpMaxCount = 2;
@@ -104,7 +104,7 @@ public class PlayerMove : MonoBehaviour
          - 맞기
          - 넘어짐
          - 사망 */
-        if (isDiveRoll || (playerState == State.Jump)||(playerState == State.Damage) || (playerState == State.Down) || (playerState == State.Dead))
+        if (isDiveRoll || (playerState == State.Jump)|| (playerState == State.Attack) || (playerState == State.Damage) || (playerState == State.Down) || (playerState == State.Dead))
             return;
 
         SetPlayerStateAnimator(State.DiveRoll);
@@ -145,22 +145,13 @@ public class PlayerMove : MonoBehaviour
         if ((jumpCurrentCount >= jumpMaxCount)||(playerState == State.Attack) || (playerState == State.DiveRoll) || (playerState == State.Damage) || (playerState == State.Down) || (playerState == State.Dead))
             return;
 
-        SetPlayerStateAnimator(State.Jump);
-        //playerState = PlayerState.Jump;
-        if (isJump == false)
-        {
-            anim.SetBool("isOnGround", false);
-            isJump = true;
-            anim.SetTrigger("Jump");
-        }
-
         if (getJoystick.GetComponent<Joystick>().GetIsInput())
-            jumpClickFirst = false;
+            isJumpClickFirst = false;   // 이동키 + 점프(이동하면서 점프)
         else
-            jumpClickFirst = true;
+            isJumpClickFirst = true;    // 점프 + 이동키(제자리 점프)
 
-        anim.SetBool("isJump", true);
-        Debug.Log("Jump Count : " + jumpCurrentCount);
+        SetPlayerStateAnimator(State.Jump);
+
 
         if (jumpCurrentCount == 1)
         {
@@ -173,6 +164,7 @@ public class PlayerMove : MonoBehaviour
         jumpCurrentCount++;
 
         character.GetComponent<Rigidbody>().AddForce(Vector3.up * jumpSpeed, ForceMode.Impulse);
+        //Debug.Log("Jump velocity Y : " + character.GetComponent<Rigidbody>().velocity.y);
     }
 
     // 플레이어 더블점프가 가능한 위치인가?
@@ -192,7 +184,7 @@ public class PlayerMove : MonoBehaviour
    void Jumping()
     {
         // 점프 중 일때
-        if (isJump)
+        if(playerState == State.Jump)
         {
             // 위로 올라가는 중이면 제외
             if (character.GetComponent<Rigidbody>().velocity.y >= 0.0f)
@@ -216,36 +208,14 @@ public class PlayerMove : MonoBehaviour
             //}
         }
     }
-    //public void JumpEnd()
-    //{
-    //    Debug.Log("JumpEnd");
-    //    OnGround();
-    //    anim.SetBool("isJump", false);
-    //    anim.SetBool("isOnGround", true);
-    //    jumpCurrentCount = 0;
-    //    jumpClickFirst = false;
-    //    isJump = false;
-    //    character.GetComponent<Rigidbody>().velocity = Vector3.zero;
-    //    playerState = PlayerState.Idle;
-    //}
-
-    //private void OnCollisionEnter(Collision collision)
-    //{
-    //    if (collision.gameObject.tag == "Ground")
-    //    {
-    //        jumpCurrentCount = 0;
-    //        anim.SetBool("isJump", false);
-    //        anim.SetBool("isGround", false);
-    //    }
-    //}
 
     public void OnGround()
     {
         Debug.Log("OnGround");
         jumpCurrentCount = 0;
-        isJump = false;
-        jumpClickFirst = false;
-        anim.SetBool("isJump", false);
+        //isJump = false;
+        isJumpClickFirst = false;
+        //anim.SetBool("isJump", false);
         anim.SetBool("isOnGround", true);
         character.GetComponent<Rigidbody>().velocity = Vector3.zero;
 
@@ -265,9 +235,9 @@ public class PlayerMove : MonoBehaviour
       - 맞기
       - 넘어짐
       - 사망 */
-        if (jumpClickFirst ||(playerState == State.Attack) || (playerState == State.DiveRoll) || (playerState == State.Damage) || (playerState == State.Down) || (playerState == State.Dead))
+        if (isJumpClickFirst ||(playerState == State.Attack) || (playerState == State.DiveRoll) || (playerState == State.Damage) || (playerState == State.Down) || (playerState == State.Dead))
         {
-            Debug.Log("JoystickMove // PlayerState : " + playerState);
+            //Debug.Log("JoystickMove // PlayerState : " + playerState);
             return;
         }
 
@@ -280,16 +250,31 @@ public class PlayerMove : MonoBehaviour
         Vector3 moveDir = lookForward * inputVector.y + lookRight * inputVector.x;
         transform.forward = moveDir;
 
-        // 걷기(점프키x)
-        if (!isJump)
+
+        if (playerState != State.Jump)
         {
             SetPlayerStateAnimator(State.Walk);
-            character.GetComponent<Rigidbody>().velocity = moveDir * speed;
         }
-        else
-        {
-            character.GetComponent<Rigidbody>().velocity = Vector3.zero;
-        }
+        //character.GetComponent<Rigidbody>().velocity = Vector3.zero;
+        //else
+        //{
+        //}
+
+        Vector3 moveSpeed = moveDir * speed;
+        character.GetComponent<Rigidbody>().velocity = new Vector3(moveSpeed.x, character.GetComponent<Rigidbody>().velocity.y, moveSpeed.z);
+
+        //character.GetComponent<Rigidbody>().velocity = moveDir * speed;
+
+        //// 걷기(점프키x)
+        //if (!isJump)
+        //{
+        //    SetPlayerStateAnimator(State.Walk);
+        //    character.GetComponent<Rigidbody>().velocity = moveDir * speed;
+        //}
+        //else
+        //{
+        //    character.GetComponent<Rigidbody>().velocity = Vector3.zero;
+        //}
         //속도 0 / 공격중 / 조이스틱을 땟을 때
         //if (desiredVelocity == Vector3.zero || anim.GetBool("isAttack") == true || getJoystick.GetComponent<Joystick>().GetIsInput() == false)
         //{
@@ -323,16 +308,21 @@ public class PlayerMove : MonoBehaviour
 
     void Dead()
     {
-        // 데미지를 받았을 떄
-        SetPlayerStateAnimator(State.Damage);
+        // 죽었을 때
+        SetPlayerStateAnimator(State.Dead);
 
     }
 
     void Down()
     {
-        // 데미지를 받았을 떄
-        SetPlayerStateAnimator(State.Damage);
+        // 데미지를 받아서 넘어졌을 때
+        SetPlayerStateAnimator(State.Down);
 
+    }
+
+    public State GetPlayerState()
+    {
+        return playerState;
     }
 
     public void SetPlayerStateAnimator(State newState)
@@ -363,8 +353,11 @@ public class PlayerMove : MonoBehaviour
                 anim.SetBool("isAttack", true);
                 break;
             case State.Jump:
-                anim.SetBool("isJump", true);
-                break;
+                {
+                    anim.SetBool("isOnGround", false);
+                    anim.SetTrigger("Jump");
+                    break;
+                }
             case State.DiveRoll:
                 anim.SetTrigger("DiveRoll");
                 break;
@@ -380,11 +373,10 @@ public class PlayerMove : MonoBehaviour
         }
     }
 
-    public void StopWalk()
+    public void EndJoystickEnd()
     {
-        anim.SetBool("isWalk", false);
-        //rb.velocity = Vector3.zero;
-        character.GetComponent<Rigidbody>().velocity = Vector3.zero;
+        if (playerState == State.Walk)
+            character.GetComponent<Rigidbody>().velocity = Vector3.zero;
     }
 
     public void Hit()

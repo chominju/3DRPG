@@ -68,7 +68,7 @@ public class Joystick : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
     {
         lever.anchoredPosition = Vector2.zero;
         isInput = false;
-        //getPlayer.GetComponent<PlayerMove>().StopWalk();
+        getPlayer.GetComponent<PlayerMove>().EndJoystickEnd();
     }
 
     void Update()

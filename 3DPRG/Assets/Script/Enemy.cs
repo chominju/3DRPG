@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using UnityEngine.AI;
 public class Enemy : MonoBehaviour
 {
-    public enum EnemyState
+    public enum State
     {
         Idle,               // 기본
         Walk,               // 걷기(달리기)
@@ -14,22 +14,22 @@ public class Enemy : MonoBehaviour
         Dead                // 죽기
     }
 
-    public EnemyState state;   // 현재 적의 상태
+    public State enemyState;   // 현재 적의 상태
     public Slider hpBar;            // 적의 Hp Bar
 
     public int maxHp;           // 최대 체력
     int currentHp;              // 현재 체력
 
-    //NavMeshAgent navMeshAgent;
+    NavMeshAgent navMeshAgent;
     Animator anim;
-    private GameObject player; // 플레이어 객체
+    private Transform player; // 플레이어 객체
 
     float distance;           // 플레이어와의 거리
 
     // Start is called before the first frame update
     void Start()
     {
-        state = EnemyState.Idle;
+        enemyState = State.Idle;
         currentHp = maxHp;
         hpBar.maxValue = maxHp;
 
@@ -37,11 +37,11 @@ public class Enemy : MonoBehaviour
         if (anim == null)
             return;
 
-        player = GameObject.FindGameObjectWithTag("Player");
+        player = GameObject.FindGameObjectWithTag("Player").transform;
         if (player == null)
             return;
 
-        //navMeshAgent = GetComponent<NavMeshAgent>();
+        navMeshAgent = GetComponent<NavMeshAgent>();
         //if (navMeshAgent == null)
         //    return;
 
@@ -50,18 +50,18 @@ public class Enemy : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        distance = Vector3.Distance(transform.position, player.transform.position);
+        distance = Vector3.Distance(transform.position, player.position);
 
-        switch(state)
+        switch(enemyState)
         {
-            case EnemyState.Idle:
+            case State.Idle:
                 Idle();
                 break;
-            case EnemyState.Walk:
+            case State.Walk:
                 Walk();
                 break;
-            case EnemyState.Attack:
-                AttackAnim();
+            case State.Attack:
+                Attack();
                 break;
         }
     }
@@ -70,27 +70,30 @@ public class Enemy : MonoBehaviour
     {
         if(distance<=8)
         {
-            state = EnemyState.Walk;
-            //navMeshAgent.isStopped = false;
+            enemyState = State.Walk;
+            navMeshAgent.isStopped = false;
+            Debug.Log("Idle distance<=8");
         }
     }
     void Walk()
     {
         if (distance > 8)
         {
-            state = EnemyState.Idle;
-            //navMeshAgent.isStopped = true;
-           // navMeshAgent.ResetPath();
+            enemyState = State.Idle;
+            navMeshAgent.isStopped = true;
+            navMeshAgent.ResetPath();
+            Debug.Log("Walk distance>8");
         }
-        else if(distance <=2)
+        else if (distance <= 2)
         {
-            state = EnemyState.Attack;
-           // navMeshAgent.isStopped = true;
-           // navMeshAgent.ResetPath();
+            enemyState = State.Attack;
+            navMeshAgent.isStopped = true;
+            navMeshAgent.ResetPath();
+            Debug.Log("Walk distance<=2");
         }
         else
         {
-           // navMeshAgent.SetDestination(player.transform.position);
+             navMeshAgent.SetDestination(player.position);
         }
     }
 
@@ -98,8 +101,9 @@ public class Enemy : MonoBehaviour
     {
         if (distance > 2)
         {
-            state = EnemyState.Walk;
-           // navMeshAgent.isStopped = false;
+            enemyState = State.Walk;
+            navMeshAgent.isStopped = false;
+            Debug.Log("Attack distance>2");
         }
         else
             anim.SetBool("isAttack", true);
@@ -112,18 +116,20 @@ public class Enemy : MonoBehaviour
 
         hpBar.value = currentHp;
 
-       // navMeshAgent.isStopped = true;      // 이동 중단
-       // navMeshAgent.ResetPath();           // 경로 초기화
+        navMeshAgent.isStopped = true;      // 이동 중단
+        navMeshAgent.ResetPath();           // 경로 초기화
 
         if(currentHp > 0)
         {
+            SetEnemyStateAnimator(State.Damage);
             anim.SetTrigger("Damage");
-            state = EnemyState.Damage;
+            enemyState = State.Damage;
         }
         else
         {
+            SetEnemyStateAnimator(State.Dead);
             anim.SetTrigger("Dead");
-            state = EnemyState.Dead;
+            enemyState = State.Dead;
         }
     }
 
@@ -151,7 +157,47 @@ public class Enemy : MonoBehaviour
         // 임의의 충돌 거리. 적과 플레이어의 거리 기준으로 수정 필요
         return distance < 1.5f;
     }
-    
+
+    public void SetEnemyStateAnimator(State newState)
+    {
+        // 현재랑 같으면 넘어감
+        if (enemyState == newState)
+            return;
+
+        enemyState = newState;
+
+        //  anim.SetBool("IsIdle", false);
+        anim.SetBool("isWalk", false);
+        anim.SetBool("isAttack", false);
+        //  anim.SetBool("IsDamage", false);
+        //  anim.SetBool("IsDown", false);
+        //  anim.SetBool("IsDead", false);
+
+        // 상태에 맞는 애니메이터 파라미터 설정
+        switch (newState)
+        {
+            case State.Idle:
+                anim.SetBool("isOnGround", true);
+                break;
+            case State.Walk:
+                anim.SetBool("isWalk", true);
+                break;
+            case State.Attack:
+                anim.SetBool("isAttack", true);
+                break;
+            case State.Damage:
+                anim.SetTrigger("Damage");
+                break;
+            case State.Dead:
+                anim.SetBool("isDead", true);
+                break;
+        }
+    }
+
+
+
+
+
     //private void OnCollisionEnter(Collision collision)
     //{
     //    if (collision.transform.CompareTag("Player"))

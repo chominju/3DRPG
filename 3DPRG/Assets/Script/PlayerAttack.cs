@@ -9,6 +9,7 @@ public class PlayerAttack : MonoBehaviour
     bool isComboEnable = false;
     int comboIndex = 0;
 
+    PlayerMove.State playerState;
     // Start is called before the first frame update
     void Start()
     {
@@ -17,9 +18,21 @@ public class PlayerAttack : MonoBehaviour
 
     public void Attack()
     {
-        if (anim.GetBool("isWalk") == true)
-            anim.SetBool("isWalk", false);
-        anim.SetBool("isAttack", true);
+        playerState = GetComponent<PlayerMove>().GetPlayerState();
+        /* 공격이 불가능한 경우
+     - 점프중
+     - 구르기
+     - 맞기
+     - 넘어짐
+     - 사망 */
+        if ((playerState == PlayerMove.State.Jump) || (playerState == PlayerMove.State.DiveRoll) || (playerState == PlayerMove.State.Damage) || (playerState == PlayerMove.State.Down) || (playerState == PlayerMove.State.Dead))
+            return;
+
+        GetComponent<PlayerMove>().SetPlayerStateAnimator(PlayerMove.State.Attack);
+        
+        //if (anim.GetBool("isWalk") == true)
+        //    anim.SetBool("isWalk", false);
+        //anim.SetBool("isAttack", true);
         if (isComboEnable)
             isComboExist = true;
     }
@@ -52,7 +65,8 @@ public class PlayerAttack : MonoBehaviour
         Debug.Log("AttackEnd");
         if (isComboExist == false)
         {
-            anim.SetBool("isAttack", false);
+            GetComponent<PlayerMove>().SetPlayerStateAnimator(PlayerMove.State.Idle);
+            //anim.SetBool("isAttack", false);
             comboIndex = 0;
 
         }
@@ -60,7 +74,8 @@ public class PlayerAttack : MonoBehaviour
 
     public void ComboAttackEnd()
     {
-        anim.SetBool("isAttack", false);
+        GetComponent<PlayerMove>().SetPlayerStateAnimator(PlayerMove.State.Idle);
+        //anim.SetBool("isAttack", false);
         comboIndex = 0;
     }
 }
