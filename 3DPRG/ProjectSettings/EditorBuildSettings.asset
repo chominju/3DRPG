@@ -6,6 +6,6 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/3DRPG.unity
+    path: Assets/4. Scenes/3DRPG.unity
     guid: f289cfd31b21ff44ca70901ce3d87d98
   m_configObjects: {}
