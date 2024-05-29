@@ -18,8 +18,9 @@ public class Enemy : MonoBehaviour
     public State enemyState;                // 현재 적의 상태
     public Slider hpBar;                    // 적의 Hp Bar
 
-    public int maxHp;                       // 최대 체력
-    int currentHp;                          // 현재 체력
+    public float maxHp;                     // 최대 체력
+    float currentHp;                        // 현재 체력
+    float atk;                              // 공격력
 
     NavMeshAgent navMeshAgent;              // 네비메쉬
     Animator anim;                          // 애니메이터
@@ -34,7 +35,7 @@ public class Enemy : MonoBehaviour
     float wanderRadius;                     // 배회 반경
     float chaseDistance;                    // 추적을 시작 할 거리
     float attackDistance;                   // 공격을 할 거리
-
+    
 
 
     // Start is called before the first frame update
@@ -43,6 +44,7 @@ public class Enemy : MonoBehaviour
         enemyState = State.Idle;
         currentHp = maxHp;
         hpBar.maxValue = maxHp;
+        hpBar.value = currentHp;
 
         anim = GetComponent<Animator>();
         if (anim == null)
@@ -53,6 +55,7 @@ public class Enemy : MonoBehaviour
             return;
 
         navMeshAgent = GetComponent<NavMeshAgent>();
+        //navMeshAgent.stoppingDistance 
         attackCoolTime = 1.0f;
         currentAttackCoolTime = 0.0f;
         wanderCooTime = 5.0f;
@@ -63,27 +66,36 @@ public class Enemy : MonoBehaviour
         wanderRadius = 10.0f;
         chaseDistance = 8.0f;
         attackDistance = 2.0f;
+        atk = 10.0f;
     }
 
     // Update is called once per frame
     void Update()
     {
-        distance = Vector3.Distance(transform.position, player.position);
-        Debug.Log(enemyState);
-        switch(enemyState)
+
+        if (player.gameObject.activeSelf)
         {
-            case State.Idle:
-                Idle();
-                break;
-            case State.Wander:
-                Wander();
-                break;
-            case State.Chase:
-                Walk();
-                break;
-            case State.Attack:
-                Attack();
-                break;
+            distance = Vector3.Distance(transform.position, player.position);
+            switch (enemyState)
+            {
+                case State.Idle:
+                    Idle();
+                    break;
+                case State.Wander:
+                    Wander();
+                    break;
+                case State.Chase:
+                    Chase();
+                    break;
+                case State.Attack:
+                    Attack();
+                    break;
+            }
+        }
+        else
+        {
+            enemyState = State.Wander;
+            Wander();
         }
     }
 
@@ -92,18 +104,23 @@ public class Enemy : MonoBehaviour
         // 기본
         if(distance<= chaseDistance)
         {
+            // 추적거리안에 들어왔을 때(기본 -> 추적)
             enemyState = State.Chase;
             navMeshAgent.isStopped = false;
             Debug.Log("Idle distance<=8");
         }
         else
+        {
+            // 추적거리 밖일 때(기본 -> 배회)
             enemyState = State.Wander;
+        }
     }
-    void Walk()
+    void Chase()
     {
-        // 걷기
+        // 추적
         if (distance > chaseDistance)
         {
+            // 추적거리보다 길 때(추적 -> 걷기)
             enemyState = State.Idle;
             navMeshAgent.isStopped = true;
             navMeshAgent.ResetPath();
@@ -111,6 +128,7 @@ public class Enemy : MonoBehaviour
         }
         else if (distance <= attackDistance)
         {
+            // 공격거리보다 짧을 떄(추적 -> 공격)
             enemyState = State.Attack;
             navMeshAgent.isStopped = true;
             navMeshAgent.ResetPath();
@@ -118,6 +136,7 @@ public class Enemy : MonoBehaviour
         }
         else
         {
+            // 추적거리안에 들어왔을 때(추적)
              navMeshAgent.SetDestination(player.position);
         }
     }
@@ -127,17 +146,20 @@ public class Enemy : MonoBehaviour
         // 공격
         if (distance > attackDistance)
         {
+            // 공격거리안에 못들어왔을 때(공격 -> 추적)
             enemyState = State.Chase;
             navMeshAgent.isStopped = false;
             Debug.Log("Attack distance>2");
         }
         else
         {
+            // 공격 중
             currentAttackCoolTime += Time.deltaTime;
 
             if (currentAttackCoolTime >= attackCoolTime)
             {
-            anim.SetBool("isAttack", true);
+                anim.SetTrigger("Attack");
+            //anim.SetBool("isAttack", true);
                 currentAttackCoolTime = 0.0f;
             }
 
@@ -146,8 +168,8 @@ public class Enemy : MonoBehaviour
 
     void Wander()
     {
-        currentWanderCooTime += Time.deltaTime;
         // 배회
+        currentWanderCooTime += Time.deltaTime;
         if (currentWanderCooTime >= wanderCooTime)
         {
             Vector3 newPos = RandomNavPos();
@@ -157,6 +179,7 @@ public class Enemy : MonoBehaviour
 
         if (distance <= chaseDistance)
         {
+            // 추적거리보다 짧을 때 (배회 -> 추적)
             enemyState = State.Chase;
             navMeshAgent.ResetPath();
         }
@@ -165,15 +188,18 @@ public class Enemy : MonoBehaviour
 
     Vector3 RandomNavPos()
     {
+        // 구 내부의 임의의 점 반환. (3D 공간에서 무작위 위치 생성 가능)
         Vector3 randomDirection = Random.insideUnitSphere * wanderRadius;
         randomDirection += transform.position;
-        NavMeshHit navHit;
+
+
+        // SamplePosition 로 주위의 NavMesh 상에서 가까운 점을 찾음
+        NavMeshHit navHit;  // 유효한 위치 반환
         NavMesh.SamplePosition(randomDirection, out navHit, wanderRadius, -1);
         return navHit.position;
     }
 
-
-    void Damaged(int damage)
+    public void Damaged(int damage)
     {
         currentHp -= damage;
 
@@ -201,34 +227,18 @@ public class Enemy : MonoBehaviour
         enemyState = State.Idle;
     }
 
-    void RealAttack()
+    void AttackToPlayer()
     {
-        player.SendMessage("Damaged", 10);
+        //distance = Vector3.Distance(transform.position, player.position);
+        //if (distance > attackDistance)
+        //    return;
+        ////Debug.Log("AttackToPlayer!!!");
+        //player.SendMessage("Damaged", atk);
     }
 
-    void AttackAnim()
+    void DeadEnd()
     {
-        if(player != null)
-        {
-            // 적과 플레이어의 충돌 여부 검사
-            if (IsPlayerInAttackRange())
-            {
-                Debug.Log("Attack!!!");
-                //// 플레이어에게 데미지를 입힘
-                //PlayerHealth playerHealth = player.GetComponent<PlayerHealth>();
-                //if (playerHealth != null)
-                //{
-                //    playerHealth.TakeDamage(attackDamage);
-                //}
-            }
-        }
-    }
-
-    bool IsPlayerInAttackRange()
-    {
-        float distance = Vector3.Distance(transform.position, player.transform.position);
-        // 임의의 충돌 거리. 적과 플레이어의 거리 기준으로 수정 필요
-        return distance < 1.5f;
+        gameObject.SetActive(false);
     }
 
     public void SetEnemyStateAnimator(State newState)
@@ -257,33 +267,15 @@ public class Enemy : MonoBehaviour
                 anim.SetBool("isWalk", true);
                 break;
             case State.Attack:
-                anim.SetBool("isAttack", true);
+                anim.SetBool("Attack", true);
                 break;
             case State.Damage:
                 anim.SetTrigger("Damage");
                 break;
             case State.Dead:
-                anim.SetBool("isDead", true);
+                anim.SetBool("Dead", true);
                 break;
         }
     }
-
-
-
-
-
-    //private void OnCollisionEnter(Collision collision)
-    //{
-    //    if (collision.transform.CompareTag("Player"))
-    //    {
-    //            anim.SetBool("isAttack", true);
-    //    }
-    //}
-
-    //private void OnCollisionExit(Collision collision)
-    //{
-    //    if (collision.transform.CompareTag("Player"))
-    //        anim.SetBool("isAttack", false);
-    //}
 
 }

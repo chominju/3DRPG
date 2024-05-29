@@ -60,27 +60,6 @@ ModelImporter:
       bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
       curves: []
       events:
-      - time: 0.23956044
-        functionName: ComboEnable
-        data: 
-        objectReferenceParameter: {instanceID: 0}
-        floatParameter: 0
-        intParameter: 0
-        messageOptions: 0
-      - time: 0.82417583
-        functionName: ComboDisable
-        data: 
-        objectReferenceParameter: {instanceID: 0}
-        floatParameter: 0
-        intParameter: 0
-        messageOptions: 0
-      - time: 0.93186814
-        functionName: ComboExist
-        data: 
-        objectReferenceParameter: {instanceID: 0}
-        floatParameter: 0
-        intParameter: 0
-        messageOptions: 0
       - time: 0.982239
         functionName: AttackEnd
         data: 
@@ -88,8 +67,8 @@ ModelImporter:
         floatParameter: 0
         intParameter: 0
         messageOptions: 0
-      - time: 0.993228
-        functionName: ComboAttackEnd
+      - time: 0.3488569
+        functionName: AttackToEnemy
         data: 
         objectReferenceParameter: {instanceID: 0}
         floatParameter: 0

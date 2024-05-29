@@ -24,13 +24,12 @@ public class PlayerMove : MonoBehaviour
     int jumpMaxCount;
     bool isJumpClickFirst;
     bool isDiveRoll;
-    bool isJump;
-    bool isDoubleJump;
 
     float currentHp;
     float maxHp;
     public Slider hpBar;
 
+    int damageCount;
 
     public enum State
     {
@@ -53,16 +52,17 @@ public class PlayerMove : MonoBehaviour
         getJoystick = GameObject.FindWithTag("Joystick");
         isJumpClickFirst = false;
         isDiveRoll = false;
-        isDoubleJump = false;
         jumpMaxCount = 2;
-        maxHp = 100;
+        maxHp = 1000;
         currentHp = maxHp;
         hpBar.maxValue = maxHp;
+        damageCount = 0;
+        hpBar.GetComponentInChildren<Text>().text = currentHp.ToString() + " / " + maxHp.ToString();
     }
 
     void FixedUpdate()
     {
-        if (getJoystick.GetComponent<Joystick>().GetIsInput())
+        if (getJoystick.GetComponent<Joystick>().GetIsInput())                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
         {
             JoystickMove();
         }
@@ -166,7 +166,6 @@ public class PlayerMove : MonoBehaviour
         {
             if (IsPlayerDoubleJumpAble())
                 return;
-            isDoubleJump = true;
             anim.SetTrigger("DoubleJump");
             //anim.SetBool("isDoubleJump", true);
         }
@@ -310,12 +309,25 @@ public class PlayerMove : MonoBehaviour
 
     void Damaged(float damage)
     {
+        //Debug.Log("Damage : " + damage);
         // 데미지를 받았을 떄
         currentHp -= damage;
         hpBar.value = currentHp;
-
+        hpBar.GetComponentInChildren<Text>().text = currentHp.ToString() + " / " + maxHp.ToString();
         if (currentHp > 0)
-            SetPlayerStateAnimator(State.Damage);
+        {
+            damageCount++;
+            if (damageCount <= 3)
+            {
+                SetPlayerStateAnimator(State.Damage);
+            }
+            else
+            {
+                SetPlayerStateAnimator(State.Down);
+                damageCount = 0;
+            }
+
+        }
         else
             Dead();
 
@@ -381,12 +393,31 @@ public class PlayerMove : MonoBehaviour
                 anim.SetTrigger("Damage");
                 break;
             case State.Down:
-                anim.SetBool("isDown", true);
+                {
+                    if (anim.GetBool("isDown") == false)
+                    {
+                        anim.SetTrigger("Down");
+                        anim.SetBool("isDown", true);
+                    }
+                }
                 break;
             case State.Dead:
-                anim.SetBool("isDead", true);
+                {
+                    StartCoroutine(HideAndShowCoroutine());
+                }
                 break;
         }
+    }
+
+    void DownEnd()
+    {
+        anim.SetBool("isDown", false);
+        SetPlayerStateAnimator(State.Idle);
+    }
+
+    void DamageEnd()
+    {
+        SetPlayerStateAnimator(State.Idle);
     }
 
     public void EndJoystickEnd()
@@ -398,6 +429,20 @@ public class PlayerMove : MonoBehaviour
     public void Hit()
     {
         Debug.Log("Hit!");
+    }
+
+
+    IEnumerator HideAndShowCoroutine()
+    {
+        // 플레이어 오브젝트를 숨깁니다.
+        gameObject.SetActive(false);
+
+        // 2초를 기다립니다.
+        yield return new WaitForSeconds(2f);
+
+        // 플레이어 오브젝트를 다시 보이게 합니다.
+        gameObject.SetActive(true);
+        currentHp = maxHp;
     }
 }
     

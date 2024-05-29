@@ -5,13 +5,14 @@ using UnityEngine.UI;
 
 public class PlayerWeaponChange : MonoBehaviour
 {
-    enum WeaponType
+    public enum WeaponType
     {
         NoWeapon,           // ¸Ç¼Õ
         Sword,              // Ä®
         Axe,                // µµ³¢
         Mace,               // ¸ÁÄ¡
-        Shield              // ¹æÆÐ
+        Shield,             // ¹æÆÐ
+        None                // null°ª    
     }
 
     WeaponType currentWeapon;
@@ -50,6 +51,11 @@ public class PlayerWeaponChange : MonoBehaviour
         axeButton.GetComponentInChildren<Button>().onClick.AddListener(() => WeaponButtonClick(WeaponType.Axe));
         maceButton.GetComponentInChildren<Button>().onClick.AddListener(() => WeaponButtonClick(WeaponType.Mace));
         shieldButton.GetComponentInChildren<Button>().onClick.AddListener(() => WeaponButtonClick(WeaponType.Shield));
+    }
+
+    public WeaponType getEqipWeaponType()
+    {
+        return currentWeapon;
     }
 
     void WeaponButtonClick(WeaponType clickType)

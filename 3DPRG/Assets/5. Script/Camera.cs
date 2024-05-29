@@ -12,6 +12,7 @@ public class Camera : MonoBehaviour
     GameObject getJoystick;
     private void Start()
     {
+        // 조이스틱 가져오기
         getJoystick = GameObject.FindWithTag("Joystick");
     }
 
@@ -41,7 +42,7 @@ public class Camera : MonoBehaviour
         if (Input.GetMouseButton(0))
         {
             Vector2 mousePosition = Input.mousePosition;
-            if (mousePosition.x > Screen.width / 2) // 화면의 오른쪽 절반에서만 입력 처리
+            if (mousePosition.x > Screen.width / 2) // 화면의 오른쪽 절반에서만 입력 처리(회전)
             {
                 RotateCamera(new Vector2(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y")));
             }
@@ -51,7 +52,7 @@ public class Camera : MonoBehaviour
         if (Input.touchCount > 0)
         {
             Touch touch = Input.GetTouch(0);
-            if (touch.position.x > Screen.width / 2) // 화면의 오른쪽 절반에서만 입력 처리
+            if (touch.position.x > Screen.width / 2) // 화면의 오른쪽 절반에서만 입력 처리(회전)
             {
                 if (touch.phase == TouchPhase.Moved)
                 {
@@ -66,6 +67,7 @@ public class Camera : MonoBehaviour
         Vector3 camAngle = cameraArm.rotation.eulerAngles;
         float x = camAngle.x - inputDelta.y;
 
+        // 캐릭터의 상하 움직임을 제한
         if (x < 180f)
         {
             x = Mathf.Clamp(x, -1f, 65f);
