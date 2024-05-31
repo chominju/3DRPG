@@ -201,7 +201,8 @@ public class Enemy : MonoBehaviour
 
     public void Damaged(int damage)
     {
-        currentHp -= damage;
+        Debug.Log("enmey Damage!!!!!");
+       currentHp -= damage;
 
         hpBar.value = currentHp;
 
@@ -251,7 +252,7 @@ public class Enemy : MonoBehaviour
 
         //  anim.SetBool("IsIdle", false);
         anim.SetBool("isWalk", false);
-        anim.SetBool("isAttack", false);
+        //anim.SetBool("isAttack", false);
         //  anim.SetBool("IsDamage", false);
         //  anim.SetBool("IsDown", false);
         //  anim.SetBool("IsDead", false);

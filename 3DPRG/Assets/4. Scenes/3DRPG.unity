@@ -1983,6 +1983,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   atk: 50
+  activeColor: {r: 0, g: 1, b: 0, a: 1}
+  inactiveColor: {r: 1, g: 0, b: 0, a: 1}
 --- !u!1 &208056902
 GameObject:
   m_ObjectHideFlags: 0
@@ -6167,6 +6169,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   atk: 20
+  activeColor: {r: 0, g: 1, b: 0, a: 1}
+  inactiveColor: {r: 1, g: 0, b: 0, a: 1}
 --- !u!1001 &721633890
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -9061,6 +9065,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   atk: 5
+  activeColor: {r: 0, g: 1, b: 0, a: 1}
+  inactiveColor: {r: 1, g: 0, b: 0, a: 1}
 --- !u!1001 &1115148196
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -13193,6 +13199,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   atk: 10
+  activeColor: {r: 0, g: 1, b: 0, a: 1}
+  inactiveColor: {r: 1, g: 0, b: 0, a: 1}
 --- !u!1001 &1609141258
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -13787,6 +13795,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   atk: 5
+  activeColor: {r: 0, g: 1, b: 0, a: 1}
+  inactiveColor: {r: 1, g: 0, b: 0, a: 1}
 --- !u!1001 &1721932698
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -24137,6 +24147,10 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 339967717856486198, guid: 80790f92b47c6944da9e184285a52b3b, type: 3}
+      propertyPath: m_Layer
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 339967717856486198, guid: 80790f92b47c6944da9e184285a52b3b, type: 3}
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
@@ -24293,12 +24307,20 @@ PrefabInstance:
       value: -4.2
       objectReference: {fileID: 0}
     - target: {fileID: 7792317877855459038, guid: 80790f92b47c6944da9e184285a52b3b, type: 3}
+      propertyPath: m_Layer
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 7792317877855459038, guid: 80790f92b47c6944da9e184285a52b3b, type: 3}
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7792317877855459038, guid: 80790f92b47c6944da9e184285a52b3b, type: 3}
       propertyPath: m_TagString
       value: Weapon
+      objectReference: {fileID: 0}
+    - target: {fileID: 7792317878382357442, guid: 80790f92b47c6944da9e184285a52b3b, type: 3}
+      propertyPath: m_Layer
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 7792317878382357442, guid: 80790f92b47c6944da9e184285a52b3b, type: 3}
       propertyPath: m_IsActive

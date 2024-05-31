@@ -19,10 +19,10 @@ TagManager:
   - UI
   - Hand
   - Terrain
-  - ccc
-  - ppp
-  - 
-  - 
+  - Character
+  - Player
+  - Weapon
+  - Enemy
   - 
   - 
   - 

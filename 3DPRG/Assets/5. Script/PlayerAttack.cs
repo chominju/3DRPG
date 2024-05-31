@@ -39,7 +39,7 @@ public class PlayerAttack : MonoBehaviour
     public void Attack()
     {
         // 공격 버튼을 눌렀을 때
-        Debug.Log("weaponType : " + weaponType);
+        //Debug.Log("weaponType : " + weaponType);
         playerState = GetComponent<PlayerMove>().GetPlayerState();
         /* 공격이 불가능한 경우
         - 점프중
@@ -122,6 +122,7 @@ public class PlayerAttack : MonoBehaviour
     void AttackToEnemy()
     {
         // 공격 애니메이션 도중에 적에게 공격이 가능한 모션일 때
+        Debug.Log("==================================================");
         SetIsAttackToEnemy(false);
         GetEqipWeaponCollider();
     }
