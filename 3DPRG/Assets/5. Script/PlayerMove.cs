@@ -46,6 +46,7 @@ public class PlayerMove : MonoBehaviour
     State playerState;
     void Start()
     {
+        
         playerState = State.Idle;
         //rb = GetComponent<Rigidbody>(); // Rigidbody 컴포넌트 참조
         anim = GetComponent<Animator>();
@@ -309,7 +310,7 @@ public class PlayerMove : MonoBehaviour
 
     void Damaged(float damage)
     {
-        //Debug.Log("Damage : " + damage);
+        Debug.Log("enemy -> player Attack");
         // 데미지를 받았을 떄
         currentHp -= damage;
         hpBar.value = currentHp;

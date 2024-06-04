@@ -55,15 +55,12 @@ public class Enemy : MonoBehaviour
             return;
 
         navMeshAgent = GetComponent<NavMeshAgent>();
-        //navMeshAgent.stoppingDistance 
-        attackCoolTime = 1.0f;
+        attackCoolTime = 5.0f;
         currentAttackCoolTime = 0.0f;
-        wanderCooTime = 5.0f;
+        wanderCooTime = 3.0f;
         currentWanderCooTime = wanderCooTime; 
-        //if (navMeshAgent == null)
-        //    return;
 
-        wanderRadius = 10.0f;
+        wanderRadius = 5.0f;
         chaseDistance = 8.0f;
         attackDistance = 2.0f;
         atk = 10.0f;
@@ -72,7 +69,7 @@ public class Enemy : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
+        // 플레이어가 존재 할 때
         if (player.gameObject.activeSelf)
         {
             distance = Vector3.Distance(transform.position, player.position);
@@ -107,7 +104,6 @@ public class Enemy : MonoBehaviour
             // 추적거리안에 들어왔을 때(기본 -> 추적)
             enemyState = State.Chase;
             navMeshAgent.isStopped = false;
-            Debug.Log("Idle distance<=8");
         }
         else
         {
@@ -124,7 +120,6 @@ public class Enemy : MonoBehaviour
             enemyState = State.Idle;
             navMeshAgent.isStopped = true;
             navMeshAgent.ResetPath();
-            Debug.Log("Walk distance>8");
         }
         else if (distance <= attackDistance)
         {
@@ -132,7 +127,6 @@ public class Enemy : MonoBehaviour
             enemyState = State.Attack;
             navMeshAgent.isStopped = true;
             navMeshAgent.ResetPath();
-            Debug.Log("Walk distance<=2");
         }
         else
         {
@@ -149,7 +143,6 @@ public class Enemy : MonoBehaviour
             // 공격거리안에 못들어왔을 때(공격 -> 추적)
             enemyState = State.Chase;
             navMeshAgent.isStopped = false;
-            Debug.Log("Attack distance>2");
         }
         else
         {
@@ -162,6 +155,7 @@ public class Enemy : MonoBehaviour
             //anim.SetBool("isAttack", true);
                 currentAttackCoolTime = 0.0f;
             }
+
 
         }
     }
@@ -201,7 +195,7 @@ public class Enemy : MonoBehaviour
 
     public void Damaged(int damage)
     {
-        Debug.Log("enmey Damage!!!!!");
+        Debug.Log("player -> enemy Attack");
        currentHp -= damage;
 
         hpBar.value = currentHp;
@@ -211,15 +205,16 @@ public class Enemy : MonoBehaviour
 
         if(currentHp > 0)
         {
-            SetEnemyStateAnimator(State.Damage);
-            anim.SetTrigger("Damage");
-            enemyState = State.Damage;
+            if (enemyState != State.Attack)
+                SetEnemyStateAnimator(State.Damage);
+           // anim.SetTrigger("Damage");
+           // enemyState = State.Damage;
         }
         else
         {
             SetEnemyStateAnimator(State.Dead);
-            anim.SetTrigger("Dead");
-            enemyState = State.Dead;
+          //  anim.SetTrigger("Dead");
+          //  enemyState = State.Dead;
         }
     }
 

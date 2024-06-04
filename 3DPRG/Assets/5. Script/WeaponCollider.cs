@@ -8,14 +8,12 @@ public class WeaponCollider : MonoBehaviour
     GameObject player;
 
 
-    public Color activeColor = Color.blue;
-    public Color inactiveColor = Color.white;
+    public Color activeColor = Color.blue;              // 박스콜라이더 활성화시 기즈모 파란색
+    public Color inactiveColor = Color.white;           // 박스콜라이더 비활성화시 기즈모 흰색
 
 
-    private BoxCollider col;
+    private BoxCollider col;                            // 박스콜라이더 컴포넌트
 
-
-    // Start is called before the first frame update
     void Start()
     {
         player = GameObject.Find("Player");
@@ -25,6 +23,7 @@ public class WeaponCollider : MonoBehaviour
 
     void OnDrawGizmos()
     {
+        // 기즈모를 그린다
         if (col == null)
         {
             col = GetComponent<BoxCollider>();
@@ -39,9 +38,6 @@ public class WeaponCollider : MonoBehaviour
         {
             Gizmos.color = inactiveColor;
         }
-
-        // 콜라이더 유형에 따라 다르게 그립니다.
-        //Gizmos.DrawWireCube(col.center + transform.position, col.size);
         DrawColliderGizmo();
     }
 
@@ -54,23 +50,14 @@ public class WeaponCollider : MonoBehaviour
 
     private void OnTriggerStay(Collider other)
     {
-        Debug.Log("OnTriggerEnter : " + player.GetComponent<PlayerAttack>().GetIsAttack());
+        // 공격이 가능한 것인지 (불가능하다면 return)
         if (player.GetComponent<PlayerAttack>().GetIsAttack())
             return;
         if (other.gameObject.CompareTag("Enemy"))
         {
-            Debug.Log("AttackToEnemy Trigger!!!!!!");
-            // 몬스터에게 데미지를 입힙니다.
+            // 트리거한 대상이 적이라면 데미지를 입힙니다.
             player.GetComponent<PlayerAttack>().SetIsAttackToEnemy(true);
             other.gameObject.GetComponent<Enemy>().Damaged(atk);
-        }
-    }
-
-    private void OnTriggerExit(Collider other)
-    {
-        if (other.gameObject.CompareTag("Enemy"))
-        {
-            Debug.Log("AttackToEnemy Trigger OUT!!!!!!");
         }
     }
 }

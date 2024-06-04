@@ -133,7 +133,7 @@ public class CharacterObjectMove : MonoBehaviour
     {
         if (collision.gameObject.tag == "Ground")
         {
-            player.GetComponent<PlayerMove>().OnGround();
+            player.GetComponent<Player>().OnGround();
         }
     }
 }
