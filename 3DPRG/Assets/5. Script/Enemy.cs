@@ -35,8 +35,9 @@ public class Enemy : MonoBehaviour
     float wanderRadius;                     // 배회 반경
     float chaseDistance;                    // 추적을 시작 할 거리
     float attackDistance;                   // 공격을 할 거리
-    
 
+    int skillCount;                         // 스킬을 쓰기위한 횟수                              
+    int currentSkillCount;                  // 스킬을 쓰기위한 현재 횟수                              
 
     // Start is called before the first frame update
     void Start()
@@ -64,6 +65,9 @@ public class Enemy : MonoBehaviour
         chaseDistance = 8.0f;
         attackDistance = 2.0f;
         atk = 10.0f;
+
+        skillCount = 3;
+        currentSkillCount = 0;
     }
 
     // Update is called once per frame
@@ -147,13 +151,19 @@ public class Enemy : MonoBehaviour
         else
         {
             // 공격 중
-            currentAttackCoolTime += Time.deltaTime;
+            currentAttackCoolTime -= Time.deltaTime;
 
-            if (currentAttackCoolTime >= attackCoolTime)
+            if (currentAttackCoolTime <= 0.0f)
             {
+                currentSkillCount++;
                 anim.SetTrigger("Attack");
-            //anim.SetBool("isAttack", true);
-                currentAttackCoolTime = 0.0f;
+                if(currentSkillCount >= skillCount)
+                {
+                    anim.SetTrigger("Skill");
+                    currentSkillCount = 0;
+                }
+                //anim.SetBool("isAttack", true);
+                currentAttackCoolTime = attackCoolTime;
             }
 
 
@@ -225,16 +235,27 @@ public class Enemy : MonoBehaviour
 
     void AttackToPlayer()
     {
-        //distance = Vector3.Distance(transform.position, player.position);
-        //if (distance > attackDistance)
-        //    return;
-        ////Debug.Log("AttackToPlayer!!!");
-        //player.SendMessage("Damaged", atk);
+        distance = Vector3.Distance(transform.position, player.position);
+        if (distance > attackDistance)
+            return;
+        //Debug.Log("AttackToPlayer!!!");
+        player.GetComponent<Player>().Damaged(atk);
+    }
+
+    void AttackSkillToPlayer()
+    {
+        Debug.Log("Skill!!!");
+        distance = Vector3.Distance(transform.position, player.position);
+        if (distance > attackDistance)
+            return;
+        player.GetComponent<Player>().Damaged(atk*2);
     }
 
     void DeadEnd()
     {
-        gameObject.SetActive(false);
+        var getPool = EnemyManager.GetInstance().GetEnemyPool();
+        getPool.Release(this);
+        //gameObject.SetActive(false);
     }
 
     public void SetEnemyStateAnimator(State newState)

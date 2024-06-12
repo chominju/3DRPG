@@ -306,7 +306,7 @@ public class Player : MonoBehaviour
 
     }
 
-    void Damaged(float damage)
+    public void Damaged(float damage)
     {
         Debug.Log("enemy -> player Attack");
         // 데미지를 받았을 떄

@@ -412,7 +412,6 @@ public class PlayerMove : MonoBehaviour
 
     void DownEnd()
     {
-        anim.SetBool("isDown", false);
         SetPlayerStateAnimator(State.Idle);
     }
 
