@@ -10,18 +10,30 @@ public class EnemyManager : MonoBehaviour
 
     [SerializeField]
     private GameObject enemyPrefab;
+    [SerializeField]
+    private Vector3[] enemyStartTransform; 
 
-    private IObjectPool<Enemy> enemyPool;
+    private IObjectPool<GameObject> enemyPool;
 
     // 이미 풀에 있는 항목을 해제할려고 할때 오류발생을 시키는지
     public bool collectionChecks = true;
     public int maxPoolSize = 10;
+    int index;
     // Start is called before the first frame update
     void Start()
     {
         if (instance == null)
             instance = this;
-        enemyPool = new ObjectPool<Enemy>(CreatePooledEnemy, OnTakeFromPool, OnReturnedToPool, OnDestroyPoolObject, collectionChecks, 10, maxPoolSize);
+        // 오브젝트 풀링 초기화
+        enemyPool = new ObjectPool<GameObject>(CreatePooledEnemy, OnTakeFromPool, OnReturnedToPool, OnDestroyPoolObject, collectionChecks, 10, maxPoolSize);
+
+        for (index =0; index < maxPoolSize; index++)
+        {
+            GameObject enemy = CreatePooledEnemy();
+            enemyPool.Release(enemy);
+            enemy.GetComponent<Transform>().position = enemyStartTransform[index];
+            enemyPool.Get();
+        }
     }
 
 
@@ -30,7 +42,7 @@ public class EnemyManager : MonoBehaviour
         return instance;
     }
 
-    public IObjectPool<Enemy> GetEnemyPool()
+    public IObjectPool<GameObject> GetEnemyPool()
     {
         return enemyPool;
     }
@@ -41,26 +53,26 @@ public class EnemyManager : MonoBehaviour
         
     }
     
-    private Enemy CreatePooledEnemy()
+    private GameObject CreatePooledEnemy()
     {
         Debug.Log("Log : CreatePooledEnemy");
-        Enemy enemy = Instantiate(enemyPrefab).GetComponent<Enemy>();
+        GameObject enemy = Instantiate(enemyPrefab);
         return enemy;
     }
 
-    private void OnTakeFromPool(Enemy enemy)
+    private void OnTakeFromPool(GameObject enemy)
     {
-        enemy.gameObject.SetActive(true);
+        enemy.SetActive(true);
     }
 
-    private void OnReturnedToPool(Enemy enemy)
+    private void OnReturnedToPool(GameObject enemy)
     {
         Debug.Log("Log : OnReturnedToPool");
-        enemy.gameObject.SetActive(false);
+        enemy.SetActive(false);
     }
 
-    private void OnDestroyPoolObject(Enemy enemy)
+    private void OnDestroyPoolObject(GameObject enemy)
     {
-        Destroy(enemy.gameObject);
+        Destroy(enemy);
     }
 }

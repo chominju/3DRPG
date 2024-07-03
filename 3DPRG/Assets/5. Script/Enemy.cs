@@ -145,6 +145,7 @@ public class Enemy : MonoBehaviour
         if (distance > attackDistance)
         {
             // 공격거리안에 못들어왔을 때(공격 -> 추적)
+            currentAttackCoolTime = 0.0f;
             enemyState = State.Chase;
             navMeshAgent.isStopped = false;
         }
@@ -254,7 +255,7 @@ public class Enemy : MonoBehaviour
     void DeadEnd()
     {
         var getPool = EnemyManager.GetInstance().GetEnemyPool();
-        getPool.Release(this);
+        getPool.Release(gameObject);
         //gameObject.SetActive(false);
     }
 
@@ -266,12 +267,7 @@ public class Enemy : MonoBehaviour
 
         enemyState = newState;
 
-        //  anim.SetBool("IsIdle", false);
         anim.SetBool("isWalk", false);
-        //anim.SetBool("isAttack", false);
-        //  anim.SetBool("IsDamage", false);
-        //  anim.SetBool("IsDown", false);
-        //  anim.SetBool("IsDead", false);
 
         // 상태에 맞는 애니메이터 파라미터 설정
         switch (newState)

@@ -30,6 +30,11 @@ public class Player : MonoBehaviour
 
     int damageCount;
 
+    bool isDown;
+    bool isInvincibility;
+    float invincibilityTimer;
+    float invincibilityCurrentTimer;
+
     public enum State
     {
         Idle,           // 기본
@@ -56,6 +61,9 @@ public class Player : MonoBehaviour
         currentHp = maxHp;
         hpBar.maxValue = maxHp;
         damageCount = 0;
+        isInvincibility = false;
+        invincibilityTimer = 2.0f;
+        invincibilityCurrentTimer = 0.0f;
         hpBar.GetComponentInChildren<Text>().text = currentHp.ToString() + " / " + maxHp.ToString();
     }
 
@@ -68,6 +76,16 @@ public class Player : MonoBehaviour
         else
         {
             PlayerIdle();
+        }
+
+        if(isInvincibility)
+        {
+            invincibilityTimer += Time.deltaTime;
+            if(invincibilityCurrentTimer >= invincibilityTimer)
+            {
+                isInvincibility = false;
+                invincibilityCurrentTimer = 0.0f;
+            }
         }
 
         Jumping();
@@ -308,6 +326,9 @@ public class Player : MonoBehaviour
 
     public void Damaged(float damage)
     {
+        if (isInvincibility)
+            return;
+
         Debug.Log("enemy -> player Attack");
         // 데미지를 받았을 떄
         currentHp -= damage;
@@ -315,6 +336,10 @@ public class Player : MonoBehaviour
         hpBar.GetComponentInChildren<Text>().text = currentHp.ToString() + " / " + maxHp.ToString();
         if (currentHp > 0)
         {
+            Debug.Log("damageCount : " + damageCount);
+            Debug.Log("isInvincibility : " + isInvincibility);
+            if (isDown)
+                return;
             damageCount++;
             if (damageCount <= 3)
             {
@@ -393,11 +418,16 @@ public class Player : MonoBehaviour
                 break;
             case State.Down:
                 {
-                    if (anim.GetBool("isDown") == false)
+                    if(!isInvincibility)
                     {
+                        isDown = true;
                         anim.SetTrigger("Down");
-                        anim.SetBool("isDown", true);
                     }
+                    //if (anim.GetBool("isDown") == false)
+                    //{
+                    //    anim.SetTrigger("Down");
+                    //    anim.SetBool("isDown", true);
+                    //}
                 }
                 break;
             case State.Dead:
@@ -410,8 +440,11 @@ public class Player : MonoBehaviour
 
     void DownEnd()
     {
-        anim.SetBool("isDown", false);
+        //anim.SetBool("isDown", false);
         SetPlayerStateAnimator(State.Idle);
+        isDown = false;
+        isInvincibility = true;
+       // isInvincibility
     }
 
     void DamageEnd()
