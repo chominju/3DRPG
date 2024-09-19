@@ -6,7 +6,7 @@ using UnityEngine.Pool;
 
 public class EnemyManager : MonoBehaviour
 {
-    private static EnemyManager instance;
+    private static EnemyManager instance = null;
 
     [SerializeField]
     private GameObject enemyPrefab;
@@ -18,7 +18,14 @@ public class EnemyManager : MonoBehaviour
     // 이미 풀에 있는 항목을 해제할려고 할때 오류발생을 시키는지
     public bool collectionChecks = true;
     public int maxPoolSize = 10;
+    int enemyKillCount = 0;         // 적을 처치 한 수
+
+
     int index;
+
+
+    public GameObject panel1;
+    public GameObject panel2;
     // Start is called before the first frame update
     void Start()
     {
@@ -37,7 +44,7 @@ public class EnemyManager : MonoBehaviour
     }
 
 
-    static public EnemyManager GetInstance()
+    public static  EnemyManager GetInstance()
     {
         return instance;
     }
@@ -75,4 +82,16 @@ public class EnemyManager : MonoBehaviour
     {
         Destroy(enemy);
     }
+
+    public int GetEnemyKillCount()
+    {
+        return enemyKillCount;
+    }
+
+    public void AddEnmeyKillCountㅁ()
+    {
+        enemyKillCount++;
+        QuestManager.GetInstance().AddCurrentCount(enemyKillCount);
+    }
+
 }

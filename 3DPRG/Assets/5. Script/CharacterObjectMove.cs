@@ -13,6 +13,8 @@ public class CharacterObjectMove : MonoBehaviour
 
 
     private Rigidbody rb;
+
+
     private void Start()
     {
         getJoystick = GameObject.FindWithTag("Joystick");
@@ -135,5 +137,7 @@ public class CharacterObjectMove : MonoBehaviour
         {
             player.GetComponent<Player>().OnGround();
         }
+
     }
+
 }

@@ -6,34 +6,34 @@ public class Player : MonoBehaviour
 {
     public float speed = 5f; // 이동 속도
 
-    public float jumpSpeed = 7;
-    public float diveRollSpeed = 12;
-    int jumpCurrentCount = 0;
-    private Rigidbody rb;
-    Animator anim;
-    public float raycastDistance = 1.0f;
-    public float doubleDistance = 0.5f;
+    public float jumpSpeed = 7;                                     // 점프 속도(거리)
+    public float diveRollSpeed = 12;                                // 구르기 속도(거리)
+    int jumpCurrentCount = 0;                                       // 현재 점프 카운트
+    private Rigidbody rb;                                           // 리지드바디
+    Animator anim;                                                  // 애니메이터
+    public float raycastDistance = 1.0f;                            // 땅바닥과의 거리 감지
+    public float doubleDistance = 0.5f;                             // 더블점프가 가능한 땅바닥과의 거리
 
-    GameObject getJoystick;
+    GameObject getJoystick;                                         // 조이스틱 오브젝트
     [SerializeField]
-    private Transform character;
+    private Transform character;                                    // 부모 오브젝트
     [SerializeField]
-    private Transform cameraArm;
+    private Transform cameraArm;                                    // 카메라 오브젝트
 
-    int jumpMaxCount;
-    bool isJumpClickFirst;
-    bool isDiveRoll;
+    int jumpMaxCount;                                               // 점프 최대 수 
+    bool isJumpClickFirst;                                          // 점프를 먼저 클릭했는가
+    bool isDiveRoll;                                                // 구르기 중인가
 
-    float currentHp;
-    float maxHp;
-    public Slider hpBar;
+    float currentHp;                                                // 현재 hp
+    float maxHp;                                                    // 최대 hp
+    public Slider hpBar;                                            // 플레이어 hp바
 
-    int damageCount;
+    int damageCount;                                                // 몇번의 공격을 맞았는가
 
-    bool isDown;
-    bool isInvincibility;
-    float invincibilityTimer;
-    float invincibilityCurrentTimer;
+    bool isDown;                                                    // 넘어졌는지
+    bool isInvincibility;                                           // 무적상태인가
+    float invincibilityTimer;                                       // 무적시간
+    float invincibilityCurrentTimer;                                // 현재 무적시간
 
     public enum State
     {
@@ -251,8 +251,10 @@ public class Player : MonoBehaviour
 
     public void JoystickMove()
     {
+
         if (!getJoystick.GetComponent<Joystick>().GetIsInput())
             return;
+
         /* 이동이 불가능한 경우
       - 선점프
       - 구르기
@@ -260,6 +262,7 @@ public class Player : MonoBehaviour
       - 맞기
       - 넘어짐
       - 사망 */
+
         if (isJumpClickFirst || (playerState == State.Attack) || (playerState == State.DiveRoll) || (playerState == State.Damage) || (playerState == State.Down) || (playerState == State.Dead))
         {
             //Debug.Log("JoystickMove // PlayerState : " + playerState);
@@ -476,4 +479,5 @@ public class Player : MonoBehaviour
         gameObject.SetActive(true);
         currentHp = maxHp;
     }
+
 }

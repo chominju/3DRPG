@@ -2397,7 +2397,6 @@ GameObject:
   - component: {fileID: 8855052669661678444}
   - component: {fileID: 9036980633323257398}
   - component: {fileID: 510412364}
-  - component: {fileID: 510412368}
   - component: {fileID: 510412372}
   m_Layer: 9
   m_Name: MaleCharacterPBR
@@ -2458,25 +2457,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a346fee6fde121049a9d0a8af278584e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &510412368
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8189980434977739222}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 89781c6f02487e54ba3ec1e59c5b803e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  speed: 5
-  jumpSpeed: 7
-  diveRollSpeed: 12
-  raycastDistance: 0.2
-  doubleDistance: 1
-  character: {fileID: 0}
-  cameraArm: {fileID: 0}
 --- !u!114 &510412372
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2489,17 +2469,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e069f7efd1a88eb45be0db645c3081a2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  swordButton: {fileID: 0}
-  axeButton: {fileID: 0}
-  maceButton: {fileID: 0}
-  shieldButton: {fileID: 0}
-  swordWeapon: {fileID: 7229817629626485462}
-  axeWeapon: {fileID: 919132148212039486}
-  maceWeapon: {fileID: 919132147623002658}
-  shieldWeapon: {fileID: 2553340005891158188}
-  noW: {fileID: 9100000, guid: 143f97dbfed7bbe408e1f1b2c99ac936, type: 2}
-  oneW: {fileID: 9100000, guid: c8e210879bc3fd14b9cf5278016f5fe9, type: 2}
-  twoW: {fileID: 9100000, guid: 4846652b822a04641931d52c0838a161, type: 2}
+  speed: 5
+  jumpSpeed: 7
+  diveRollSpeed: 12
+  raycastDistance: 1
+  doubleDistance: 0.5
+  character: {fileID: 0}
+  cameraArm: {fileID: 0}
+  hpBar: {fileID: 0}
 --- !u!1 &8206070634150816031
 GameObject:
   m_ObjectHideFlags: 0
@@ -2855,11 +2832,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 775c96f25b29a464c96e04f3e961ff06, type: 3}
   m_PrefabInstance: {fileID: 1339867759}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &919132148212039486 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 775c96f25b29a464c96e04f3e961ff06, type: 3}
-  m_PrefabInstance: {fileID: 1339867759}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1824210803
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2926,11 +2898,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 1f2df18c8d37e344092e26ad53b0e864, type: 3}
   m_PrefabInstance: {fileID: 1824210803}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &919132147623002658 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 1f2df18c8d37e344092e26ad53b0e864, type: 3}
-  m_PrefabInstance: {fileID: 1824210803}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &2992823937558646821
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2992,11 +2959,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9fbe61d1f4bc091439f25f985dd189a5, type: 3}
---- !u!1 &7229817629626485462 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 5610884078883986163, guid: 9fbe61d1f4bc091439f25f985dd189a5, type: 3}
-  m_PrefabInstance: {fileID: 2992823937558646821}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &8007022423781019756 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5086268201243115593, guid: 9fbe61d1f4bc091439f25f985dd189a5, type: 3}
@@ -3063,11 +3025,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 573036acf9f1e0c42845dddc25cea245, type: 3}
---- !u!1 &2553340005891158188 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 4796543646644090803, guid: 573036acf9f1e0c42845dddc25cea245, type: 3}
-  m_PrefabInstance: {fileID: 7061633484842796831}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &2892605745560283670 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5321970135191317769, guid: 573036acf9f1e0c42845dddc25cea245, type: 3}
