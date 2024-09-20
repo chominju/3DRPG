@@ -223,7 +223,7 @@ public class Enemy : MonoBehaviour
         }
         else
         {
-            EnemyManager.GetInstance().AddEnmeyKillCount¤±();
+            EnemyManager.GetInstance().AddEnmeyKillCount();
             SetEnemyStateAnimator(State.Dead);
           //  anim.SetTrigger("Dead");
           //  enemyState = State.Dead;

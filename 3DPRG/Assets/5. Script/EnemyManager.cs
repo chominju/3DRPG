@@ -11,7 +11,9 @@ public class EnemyManager : MonoBehaviour
     [SerializeField]
     private GameObject enemyPrefab;
     [SerializeField]
-    private Vector3[] enemyStartTransform; 
+    private Vector3[] enemyStartTransform;
+    [SerializeField]
+    private GameObject bossPrefab;
 
     private IObjectPool<GameObject> enemyPool;
 
@@ -23,9 +25,6 @@ public class EnemyManager : MonoBehaviour
 
     int index;
 
-
-    public GameObject panel1;
-    public GameObject panel2;
     // Start is called before the first frame update
     void Start()
     {
@@ -88,10 +87,19 @@ public class EnemyManager : MonoBehaviour
         return enemyKillCount;
     }
 
-    public void AddEnmeyKillCount¤±()
+    public void AddEnmeyKillCount()
     {
         enemyKillCount++;
         QuestManager.GetInstance().AddCurrentCount(enemyKillCount);
+    }
+
+    public void AppearBoss()
+    {
+       GameObject boss =  Instantiate(bossPrefab);
+        boss.transform.position = new Vector3(-17.0f, 0.45f, -0.2f);
+
+       GameObject player =  GameObject.Find("Character");
+        player.transform.position = new Vector3(-17.0f, 0.45f, 7.73f);
     }
 
 }

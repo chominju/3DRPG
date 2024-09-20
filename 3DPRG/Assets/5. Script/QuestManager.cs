@@ -61,7 +61,12 @@ public class QuestManager : MonoBehaviour
         if (IsQuestClear())
         {
             if (index <= 0)
+            {
                 index++;
+                EnemyManager.GetInstance().AppearBoss();
+                QuestNameText.GetComponent<Text>().text = questName[index];
+                QuestCountText.GetComponent<Text>().text = qusetCurrentCount[index] + " / " + questClearCount[index];
+            }
         }
     }
 
