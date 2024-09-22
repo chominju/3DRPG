@@ -106,12 +106,14 @@ public class Enemy : MonoBehaviour
         if(distance<= chaseDistance)
         {
             // 추적거리안에 들어왔을 때(기본 -> 추적)
+            //SetEnemyStateAnimator(State.Chase);
             enemyState = State.Chase;
             navMeshAgent.isStopped = false;
         }
         else
         {
             // 추적거리 밖일 때(기본 -> 배회)
+            //SetEnemyStateAnimator(State.Wander);
             enemyState = State.Wander;
         }
     }
@@ -121,14 +123,17 @@ public class Enemy : MonoBehaviour
         if (distance > chaseDistance)
         {
             // 추적거리보다 길 때(추적 -> 걷기)
-            enemyState = State.Idle;
+            //SetEnemyStateAnimator(State.Idle);
+           enemyState = State.Idle;
             navMeshAgent.isStopped = true;
             navMeshAgent.ResetPath();
         }
         else if (distance <= attackDistance)
         {
             // 공격거리보다 짧을 떄(추적 -> 공격)
-            enemyState = State.Attack;
+
+           // SetEnemyStateAnimator(State.Attack);
+           enemyState = State.Attack;
             navMeshAgent.isStopped = true;
             navMeshAgent.ResetPath();
         }
@@ -146,7 +151,8 @@ public class Enemy : MonoBehaviour
         {
             // 공격거리안에 못들어왔을 때(공격 -> 추적)
             currentAttackCoolTime = 0.0f;
-            enemyState = State.Chase;
+           // SetEnemyStateAnimator(State.Chase);
+             enemyState = State.Chase;
             navMeshAgent.isStopped = false;
         }
         else
@@ -185,6 +191,7 @@ public class Enemy : MonoBehaviour
         if (distance <= chaseDistance)
         {
             // 추적거리보다 짧을 때 (배회 -> 추적)
+            //SetEnemyStateAnimator(State.Chase);
             enemyState = State.Chase;
             navMeshAgent.ResetPath();
         }
@@ -217,14 +224,16 @@ public class Enemy : MonoBehaviour
         if(currentHp > 0)
         {
             if (enemyState != State.Attack)
-                SetEnemyStateAnimator(State.Damage);
+                anim.SetTrigger("Damage");
+                //SetEnemyStateAnimator(State.Damage);
            // anim.SetTrigger("Damage");
            // enemyState = State.Damage;
         }
         else
         {
             EnemyManager.GetInstance().AddEnmeyKillCount();
-            SetEnemyStateAnimator(State.Dead);
+            anim.SetTrigger("Dead");
+            //SetEnemyStateAnimator(State.Dead);
           //  anim.SetTrigger("Dead");
           //  enemyState = State.Dead;
         }
@@ -233,6 +242,7 @@ public class Enemy : MonoBehaviour
     void DamagedEnd()
     {
         enemyState = State.Idle;
+        //SetEnemyStateAnimator(State.Idle);
     }
 
     void AttackToPlayer()
@@ -260,36 +270,36 @@ public class Enemy : MonoBehaviour
         //gameObject.SetActive(false);
     }
 
-    public void SetEnemyStateAnimator(State newState)
-    {
-        // 현재랑 같으면 넘어감
-        if (enemyState == newState)
-            return;
+    //public void SetEnemyStateAnimator(State newState)
+    //{
+    //    // 현재랑 같으면 넘어감
+    //    if (enemyState == newState)
+    //        return;
 
-        enemyState = newState;
+    //    enemyState = newState;
 
-        anim.SetBool("isWalk", false);
+    //    anim.SetBool("isWalk", false);
 
-        // 상태에 맞는 애니메이터 파라미터 설정
-        switch (newState)
-        {
-           // case State.Idle:
-             //   anim.SetBool("isOnGround", true);
-               // break;
-            case State.Chase:
-            case State.Wander:
-                anim.SetBool("isWalk", true);
-                break;
-            case State.Attack:
-                anim.SetBool("Attack", true);
-                break;
-            case State.Damage:
-                anim.SetTrigger("Damage");
-                break;
-            case State.Dead:
-                anim.SetBool("Dead", true);
-                break;
-        }
-    }
+    //    // 상태에 맞는 애니메이터 파라미터 설정
+    //    switch (newState)
+    //    {
+    //       // case State.Idle:
+    //         //   anim.SetBool("isOnGround", true);
+    //           // break;
+    //        case State.Chase:
+    //        case State.Wander:
+    //            anim.SetBool("isWalk", true);
+    //            break;
+    //        case State.Attack:
+    //            anim.SetBool("Attack", true);
+    //            break;
+    //        case State.Damage:
+    //            anim.SetTrigger("Damage");
+    //            break;
+    //        case State.Dead:
+    //            anim.SetBool("Dead", true);
+    //            break;
+    //    }
+    //}
 
 }

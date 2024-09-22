@@ -13,7 +13,7 @@ public class EnemyManager : MonoBehaviour
     [SerializeField]
     private Vector3[] enemyStartTransform;
     [SerializeField]
-    private GameObject bossPrefab;
+    private GameObject boss;
 
     private IObjectPool<GameObject> enemyPool;
 
@@ -38,6 +38,7 @@ public class EnemyManager : MonoBehaviour
             GameObject enemy = CreatePooledEnemy();
             enemyPool.Release(enemy);
             enemy.GetComponent<Transform>().position = enemyStartTransform[index];
+            enemy.name = "Enemy" + index;
             enemyPool.Get();
         }
     }
@@ -95,11 +96,15 @@ public class EnemyManager : MonoBehaviour
 
     public void AppearBoss()
     {
-       GameObject boss =  Instantiate(bossPrefab);
-        boss.transform.position = new Vector3(-17.0f, 0.45f, -0.2f);
-
-       GameObject player =  GameObject.Find("Character");
+        //GameObject boss =  Instantiate(bossPrefab);
+        // boss.transform.position = new Vector3(-17.0f, 0.45f, -0.2f);
+        boss.SetActive(true);
+        GameObject player =  GameObject.Find("Character");
         player.transform.position = new Vector3(-17.0f, 0.45f, 7.73f);
+
+        boss.transform.LookAt(player.transform.position);
+        player.transform.LookAt(boss.transform.position);
+
     }
 
 }

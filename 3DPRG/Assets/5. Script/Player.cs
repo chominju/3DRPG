@@ -20,6 +20,8 @@ public class Player : MonoBehaviour
     [SerializeField]
     private Transform cameraArm;                                    // 카메라 오브젝트
 
+    public GameObject sprintButton;
+
     int jumpMaxCount;                                               // 점프 최대 수 
     bool isJumpClickFirst;                                          // 점프를 먼저 클릭했는가
     bool isDiveRoll;                                                // 구르기 중인가
@@ -34,6 +36,10 @@ public class Player : MonoBehaviour
     bool isInvincibility;                                           // 무적상태인가
     float invincibilityTimer;                                       // 무적시간
     float invincibilityCurrentTimer;                                // 현재 무적시간
+
+    bool isDamage;
+    float damageTimer;
+    float currentDamageTimer;
 
     public enum State
     {
@@ -65,6 +71,10 @@ public class Player : MonoBehaviour
         invincibilityTimer = 2.0f;
         invincibilityCurrentTimer = 0.0f;
         hpBar.GetComponentInChildren<Text>().text = currentHp.ToString() + " / " + maxHp.ToString();
+
+        isDamage = false;
+        damageTimer = 1.0f;
+        currentDamageTimer = 0.0f;
     }
 
     void FixedUpdate()
@@ -80,13 +90,23 @@ public class Player : MonoBehaviour
 
         if(isInvincibility)
         {
-            invincibilityTimer += Time.deltaTime;
+            invincibilityCurrentTimer += Time.deltaTime;
             if(invincibilityCurrentTimer >= invincibilityTimer)
             {
                 isInvincibility = false;
                 invincibilityCurrentTimer = 0.0f;
             }
         }
+
+        if(isDamage)
+        {
+            currentDamageTimer -= Time.deltaTime;
+            if(currentDamageTimer<=0.0f)
+            {
+                currentDamageTimer = damageTimer;
+                isDamage = false;
+            }
+        }    
 
         Jumping();
     }
@@ -114,11 +134,13 @@ public class Player : MonoBehaviour
         {
             speed = 8f; // 이동 속도
             anim.SetBool("isSprint", true);
+            sprintButton.GetComponent<Image>().color = Color.grey;
         }
         else
         {
             speed = 5f; // 이동 속도
             anim.SetBool("isSprint", false);
+            sprintButton.GetComponent<Image>().color = Color.white;
         }
     }
 
@@ -339,6 +361,10 @@ public class Player : MonoBehaviour
         hpBar.GetComponentInChildren<Text>().text = currentHp.ToString() + " / " + maxHp.ToString();
         if (currentHp > 0)
         {
+            if (isDamage)
+                return;
+            isDamage = true;
+
             Debug.Log("damageCount : " + damageCount);
             Debug.Log("isInvincibility : " + isInvincibility);
             if (isDown)
@@ -346,12 +372,12 @@ public class Player : MonoBehaviour
             damageCount++;
             if (damageCount <= 3)
             {
-                SetPlayerStateAnimator(State.Damage);
+                if (playerState != State.Attack)
+                    SetPlayerStateAnimator(State.Damage);
             }
             else
             {
                 SetPlayerStateAnimator(State.Down);
-                damageCount = 0;
             }
 
         }
@@ -447,7 +473,8 @@ public class Player : MonoBehaviour
         SetPlayerStateAnimator(State.Idle);
         isDown = false;
         isInvincibility = true;
-       // isInvincibility
+        damageCount = 0;
+        // isInvincibility
     }
 
     void DamageEnd()

@@ -11,6 +11,7 @@ TagManager:
   - Character
   - Weapon
   - Water
+  - Boss
   layers:
   - Default
   - TransparentFX

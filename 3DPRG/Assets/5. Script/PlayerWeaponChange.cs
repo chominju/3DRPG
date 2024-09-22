@@ -37,10 +37,10 @@ public class PlayerWeaponChange : MonoBehaviour
     public RuntimeAnimatorController twoWeaponAnim; // 두손 애니메이터(칼+방패)
 
     Animator anim;                                  // 플레이어 애니메이터 컴포넌트
-
+    GameObject player;
     void Start()
     {
-        GameObject player = GameObject.FindWithTag("Player");
+        player = GameObject.FindWithTag("Player");
         if (player == null)
             Debug.Log("Player no Find");
         anim = player.GetComponent<Animator>();
@@ -60,6 +60,8 @@ public class PlayerWeaponChange : MonoBehaviour
 
     void WeaponButtonClick(WeaponType clickType)
     {
+        if (player.GetComponent<Player>().GetPlayerState() != Player.State.Idle)
+            return;
         // 클릭한게 쉴드라면
         if (clickType == WeaponType.Shield)
         {

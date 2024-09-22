@@ -17,7 +17,6 @@ public class PlayerAttack : MonoBehaviour
 
     bool isAttackToEnemy;
 
-
     /* 공격관련 애니메이션 이벤트 순서
      * -> ComboEnable
      * -> ComboDisable
@@ -52,7 +51,7 @@ public class PlayerAttack : MonoBehaviour
 
         // 공격으로 애니메이션 세팅
         GetComponent<Player>().SetPlayerStateAnimator(Player.State.Attack);
-        
+        anim.SetBool("isAttack", true);
         // 콤보입력이 가능 할때 공격키를 눌렀는지
         if (isComboEnable)
             isComboExist = true;
@@ -91,8 +90,8 @@ public class PlayerAttack : MonoBehaviour
     public void AttackEnd()
     {
         // 공격이 끝났을 때
-
         SetIsAttackToEnemy(false);
+        anim.SetBool("isAttack", false);
         if (isComboExist == false)
         {
             // 콤보가 존재하지 않을 때
@@ -101,11 +100,13 @@ public class PlayerAttack : MonoBehaviour
             GetComponent<Player>().SetPlayerStateAnimator(Player.State.Idle);
 
             // 맨손 콜라이더 갯수가 0개가 아니라면
-            if(handColliders.Count != 0)
+            if (handColliders.Count != 0)
             {
                 // 맨손 콜라이더를 비활성화
                 foreach (BoxCollider hand in handColliders)
+                {
                     hand.enabled = false;
+                }
             }
             // 무기콜라이더가 null이 아니라면
             if (weaponCollider != null)
@@ -115,6 +116,8 @@ public class PlayerAttack : MonoBehaviour
             }
 
         }
+
+
     }
 
     //public void ComboAttackEnd()
@@ -127,6 +130,20 @@ public class PlayerAttack : MonoBehaviour
     {
         // 공격 애니메이션 도중에 적에게 공격이 가능한 모션일 때
         SetIsAttackToEnemy(false);
+
+        // 적 리스트 초기화
+        if (handColliders.Count != 0)
+        {
+            foreach (BoxCollider hand in handColliders)
+            {
+                hand.gameObject.GetComponent<WeaponCollider>().ResetEnemyList();
+            }
+        }
+        if (weaponCollider != null)
+        {
+            weaponCollider.gameObject.GetComponent<WeaponCollider>().ResetEnemyList();
+        }
+
         GetEqipWeaponCollider();
     }
 
@@ -192,6 +209,8 @@ public class PlayerAttack : MonoBehaviour
                 break;
         }
     }
+
+
     public void SetIsAttackToEnemy(bool attack)
     {
         // 적을 이미 공격한 상태 변경
