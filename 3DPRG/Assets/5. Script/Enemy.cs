@@ -39,6 +39,7 @@ public class Enemy : MonoBehaviour
     int skillCount;                         // 스킬을 쓰기위한 횟수                              
     int currentSkillCount;                  // 스킬을 쓰기위한 현재 횟수                              
 
+
     // Start is called before the first frame update
     void Start()
     {
@@ -214,8 +215,8 @@ public class Enemy : MonoBehaviour
     public void Damaged(int damage)
     {
         Debug.Log("player -> enemy Attack");
-       currentHp -= damage;
-
+        currentHp -= damage;
+        DamageManager.GetInstance().CreateDamage(damage , Damage.DamageType.Player , transform.position);
         hpBar.value = currentHp;
 
         navMeshAgent.isStopped = true;      // 이동 중단
@@ -238,6 +239,7 @@ public class Enemy : MonoBehaviour
           //  enemyState = State.Dead;
         }
     }
+
 
     void DamagedEnd()
     {

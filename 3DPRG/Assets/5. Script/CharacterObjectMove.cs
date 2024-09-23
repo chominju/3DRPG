@@ -96,6 +96,7 @@ public class CharacterObjectMove : MonoBehaviour
 
     private void RotateCamera(Vector2 inputDelta)
     {
+        inputDelta = inputDelta / 2;
         Vector3 camAngle = cameraArm.rotation.eulerAngles;
         float x = camAngle.x - inputDelta.y;
 

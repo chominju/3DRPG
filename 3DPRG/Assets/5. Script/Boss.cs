@@ -218,6 +218,7 @@ public class Boss : MonoBehaviour
             Debug.Log("RecoveryHp!!!");
             currentRecoveryHpCoolTime = recoveryHpCoolTime;
             currentHp += 20;
+            DamageManager.GetInstance().CreateDamage(20, Damage.DamageType.Recovery, transform.position);
             if (currentHp >= maxHp)
                 currentHp = maxHp;
             bossHpBar.value = currentHp;
@@ -239,6 +240,7 @@ public class Boss : MonoBehaviour
     {
         Debug.Log("player -> enemy Attack");
         currentHp -= damage;
+        DamageManager.GetInstance().CreateDamage(damage, Damage.DamageType.Player, transform.position);
 
         bossHpBar.value = currentHp;
 

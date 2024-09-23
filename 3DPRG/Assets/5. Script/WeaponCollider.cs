@@ -82,7 +82,6 @@ public class WeaponCollider : MonoBehaviour
             other.gameObject.GetComponent<Boss>().Damaged(atk);
         }
 
-        Debug.Log("==============================================");
     }
 
     public void ResetEnemyList()

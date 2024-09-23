@@ -357,8 +357,11 @@ public class Player : MonoBehaviour
         Debug.Log("enemy -> player Attack");
         // 데미지를 받았을 떄
         currentHp -= damage;
+        DamageManager.GetInstance().CreateDamage((int)damage, Damage.DamageType.Enemy, transform.position);
         hpBar.value = currentHp;
         hpBar.GetComponentInChildren<Text>().text = currentHp.ToString() + " / " + maxHp.ToString();
+
+
         if (currentHp > 0)
         {
             if (isDamage)
