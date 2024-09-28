@@ -347,7 +347,7 @@ public class Player : MonoBehaviour
         //    }
         //}
 
-    }
+    }   
 
     public void Damaged(float damage)
     {

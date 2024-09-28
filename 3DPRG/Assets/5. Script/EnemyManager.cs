@@ -99,11 +99,15 @@ public class EnemyManager : MonoBehaviour
         //GameObject boss =  Instantiate(bossPrefab);
         // boss.transform.position = new Vector3(-17.0f, 0.45f, -0.2f);
         boss.SetActive(true);
-        GameObject player =  GameObject.Find("Character");
-        player.transform.position = new Vector3(-17.0f, 0.45f, 7.73f);
+        GameObject character =  GameObject.Find("Character");
+        character.transform.position = new Vector3(-17.0f, 0.45f, 7.73f);
 
-        boss.transform.LookAt(player.transform.position);
-        player.transform.LookAt(boss.transform.position);
+        boss.transform.LookAt(character.transform.position);
+        character.transform.LookAt(boss.transform.position);
+
+        GameObject cameraArm = GameObject.Find("CameraArm");
+        cameraArm.transform.LookAt(character.transform.position);
+
 
     }
 

@@ -13,9 +13,9 @@ public class Damage : MonoBehaviour
 
     public enum DamageType
     {
-        Player,
-        Enemy,
-        Recovery,
+        Player,                                                 // 플레이어 공격
+        Enemy,                                                  // 적 공격
+        Recovery,                                               // 회복
     }
 
     void Start()
@@ -33,10 +33,11 @@ public class Damage : MonoBehaviour
         if (textMeshProComp == null)
             textMeshProComp = GetComponent<TextMeshProUGUI>();
         if (textMeshProComp != null)
-            textMeshProComp.text = damage.ToString();
+            textMeshProComp.text = damage.ToString();   
 
         switch (type)
         {
+            // 상태별 색상 변경
             case DamageType.Player:
                 textMeshProComp.color = Color.blue;
                 break;
@@ -51,16 +52,15 @@ public class Damage : MonoBehaviour
 
     public void SetDamagePos(Vector3 enemyPos)
     {
-        Debug.Log("enemyPos :" + enemyPos);
         // 적보다 살짝 위쪽에 생성
         Vector3 damagePos = Camera.main.WorldToScreenPoint(new Vector3(enemyPos.x, enemyPos.y+1.5f, enemyPos.z));
-        Debug.Log("damagePos :" + damagePos);
         gameObject.GetComponent<RectTransform>().position = damagePos;
     }
 
     // Update is called once per frame
     void Update()
     {
+        // 1초 뒤에 데미지는 사라짐
         timer += Time.deltaTime;
         if (timer >= destroyTime)
             DestroyObject();

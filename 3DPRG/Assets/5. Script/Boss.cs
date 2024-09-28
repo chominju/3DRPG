@@ -39,18 +39,20 @@ public class Boss : MonoBehaviour
     float currentDefendCoolTime;              // 현재 방어스킬 쿨타임
     float recoveryHpCoolTime;                 // 피회복 쿨타임
     float currentRecoveryHpCoolTime;          // 피회복 쿨타임
+    int recoveryHp;                           // 피 회복 수치
     int recoveryHpCount;                      // 피회복 횟수
-    int currentRecoveryHpCount;                      // 현재 피회복 횟수
+    int currentRecoveryHpCount;               // 현재 피회복 횟수
 
-    bool isUseDefend;                         // 방어스킬 사용했는지 
-    bool isDefendAble;                         // 방어스킬 사용가능한지 
-    bool isAttack;
+    bool isUseDefendSkill;                     // 방어스킬 사용했는지 
+    bool isDefendSkillAble;                    // 방어스킬 사용가능한지 
+    bool isAttack;                             // 공격중인지
     public GameObject GameClearPanel;          // 보스를 잡았을 때 나오는 판넬
     public Slider bossHpBar;                   // 보스의 Hp Bar
 
-    int damagedCount;
-    int currentDamagedCount;
-    bool counterAttack;
+   
+    int damagedCount;                           // 맞는 횟수
+    int currentDamagedCount;                    // 지금 맞은 횟수
+    bool isCounterAttackAble;                   // 카운터 공격이 가능한지
 
     void Start()
     {
@@ -83,17 +85,18 @@ public class Boss : MonoBehaviour
         defendCoolTime = 30.0f;
         currentDefendCoolTime = 0.0f;
         recoveryHpCoolTime = 1.0f;
+        recoveryHp = 20;
         currentRecoveryHpCoolTime = 0.0f;
-        isUseDefend = false;
+        isUseDefendSkill = false;
 
         recoveryHpCount = 10;
         currentRecoveryHpCount =0;
-        isDefendAble = true;
+        isDefendSkillAble = true;
         isAttack = false;
 
         damagedCount= 3;
         currentDamagedCount = 0;
-        counterAttack = false;
+        isCounterAttackAble = false;
     }
 
     // Update is called once per frame
@@ -117,45 +120,42 @@ public class Boss : MonoBehaviour
                 case State.Defend:
                     Defend();
                     break;
+                case State.Dead:
+                    Dead();
+                    break;
             }
         }
 
-        if (!isUseDefend)
+        if (isUseDefendSkill)
         {
+            // 방어스킬를 사용했다면, 쿨타임 돌아감
             currentDefendCoolTime -= Time.deltaTime;
             if (currentDefendCoolTime <= 0.0f)
-                isDefendAble = true;
+            {
+                // 쿨타임이 끝났을 때
+                isDefendSkillAble = true;
+                isUseDefendSkill = false;
+            }
         }
     }
 
     void Idle()
     {
-        //Debug.Log("Boss Idle");
-        //// 기본
-        //if (distance <= chaseDistance)
-        //{
-        //    // 추적거리안에 들어왔을 때(기본 -> 추적)
-        //    enemyState = State.Chase;
-        //}
+        // 노피격시 가만히 서있음
     }
     void Chase()
     {
-        //// 추적
-        //if (distance > chaseDistance)
-        //{
-        //    // 추적거리보다 길 때(추적 -> 걷기)
-        //    enemyState = State.Idle;
-        //}
+        //// 추적(공격 받았을 때 추적 or 공격)
         if (distance <= attackDistance)
         {
-            // 공격거리보다 짧을 떄(추적 -> 공격)
-            //SetEnemyStateAnimator(State.Attack);
+            // 공격가능 범위일때(추적->공격)
             enemyState =  State.Attack;
             navMeshAgent.isStopped = true;
             navMeshAgent.ResetPath();
         }
         else
         {
+            // 추적중
             navMeshAgent.SetDestination(player.position);
         }
     }
@@ -165,9 +165,8 @@ public class Boss : MonoBehaviour
         // 공격
         if (distance > attackDistance)
         {
-            // 공격거리안에 못들어왔을 때(공격 -> 추적)
+            // 공격불가능 범위(공격 -> 추적)
             currentAttackCoolTime = 0.0f;
-            //SetEnemyStateAnimator(State.Chase);
             enemyState = State.Chase;
             navMeshAgent.isStopped = false;
         }
@@ -176,9 +175,11 @@ public class Boss : MonoBehaviour
             // 공격 중
             currentAttackCoolTime -= Time.deltaTime;
             transform.LookAt(player.transform.position);
-            if (currentAttackCoolTime <= 0.0f || counterAttack)
+            if (currentAttackCoolTime <= 0.0f || isCounterAttackAble)
             {
                 isAttack = true;
+                isCounterAttackAble = false;
+                // 일반 공격시 스킬
                 currentSkillCount++;
                 anim.SetTrigger("Attack");
                 if (currentSkillCount >= skillCount)
@@ -189,55 +190,58 @@ public class Boss : MonoBehaviour
                 //anim.SetBool("isAttack", true);
                 currentAttackCoolTime = attackCoolTime;
             }
-            else
-                isAttack = false;
-
-
         }
     }
 
     void Defend()
     {
-        Debug.Log("Defend!!!");
         // 방어 상태가 아니라면 return.
         if (enemyState != State.Defend)
             return;
-        if (!isUseDefend)
+
+        //  방어상태를 사용하지 않았다면
+        if (!isUseDefendSkill)
         {
             anim.SetTrigger("Defend");
             anim.SetBool("isDefend", true);
+            isUseDefendSkill = true;
+            isDefendSkillAble = false;
         }
 
-        isDefendAble = false;
-        isUseDefend = true;
-
-        Debug.Log("currentRecoveryHpCoolTime : " + currentRecoveryHpCoolTime);
+        // 일정시간마다 회복
         currentRecoveryHpCoolTime -= Time.deltaTime;
         if (currentRecoveryHpCoolTime <= 0.0f)
         {
-            Debug.Log("RecoveryHp!!!");
+            // 일정시간마다 회복하는 쿨타임 다시 복구.
             currentRecoveryHpCoolTime = recoveryHpCoolTime;
-            currentHp += 20;
-            DamageManager.GetInstance().CreateDamage(20, Damage.DamageType.Recovery, transform.position);
+            // 지금 회복 
+            currentHp += recoveryHp;
+            DamageManager.GetInstance().CreateDamage(20, Damage.DamageType.Recovery, transform.position); // 회복 폰트 출격
+
+            // 회복된 hp가 최대hp를 넘었다면 최대hp로 고정
             if (currentHp >= maxHp)
                 currentHp = maxHp;
+
+            // hp바 조정
             bossHpBar.value = currentHp;
             currentRecoveryHpCount++;
 
+            // 현재 회복횟수 >= 회복하는 횟수
             if(currentRecoveryHpCount >= recoveryHpCount)
             {
-                isUseDefend = false;
                 currentDefendCoolTime = defendCoolTime;
                 currentRecoveryHpCount = 0;
                 anim.SetBool("isDefend", false);
+
+                // 회복을 다 했으면 공격으로 바뀜
                 enemyState = State.Attack;
-                //SetEnemyStateAnimator(State.Attack);
             }
         }
     }
 
     public void Damaged(int damage)
     {
+        // 플레이어한테 맞았을 때
         Debug.Log("player -> enemy Attack");
         currentHp -= damage;
         DamageManager.GetInstance().CreateDamage(damage, Damage.DamageType.Player, transform.position);
@@ -246,122 +250,99 @@ public class Boss : MonoBehaviour
 
         navMeshAgent.isStopped = true;      // 이동 중단
         navMeshAgent.ResetPath();           // 경로 초기화
+
         // 피가 0보다 많을 때
         if (currentHp > 0)
         {
+            // 방어상태이면 return
             if (anim.GetBool("isDefend") == true)
                 return;
+
+            // 데미지 카운트 증가
             currentDamagedCount++;
+
+            // 맞은 횟수가 넘어가면 카운터 가능
             if(currentDamagedCount >=damagedCount)
             {
-                Debug.Log("반격!!!");
-
-                counterAttack = true;
+                // 카운터 어택이 가능함
+                isCounterAttackAble = true;
                 Attack();
-                counterAttack = false;
                 currentDamagedCount = 0;
                 return;
             }
+
+            // 공격중이 아니라면 맞는 모션
             if (!isAttack)
                 anim.SetTrigger("Damage");
-                // SetEnemyStateAnimator(State.Damage);
 
+            // 현재 hp가 절반 밑으로 떨어졌을 때
             if (currentHp <= maxHp / 2)
             {
-                Debug.Log("Hp 1/2");
-                if (isDefendAble)
+                // 방어모드 사용이 가능한지
+                if (isDefendSkillAble)
+                {
+                    // 방어모드
                     enemyState = State.Defend;
-                //SetEnemyStateAnimator(State.Defend);
+                    return;
+                }
+                else
+                    Debug.Log("DefendSkill is coolTime");
             }
-            else
-                enemyState = State.Chase;
-            //SetEnemyStateAnimator(State.Chase);
         }
         else
         {
-            // 죽었을 때
-            anim.SetBool("Dead", true);
-            //SetEnemyStateAnimator(State.Dead);
+            // 상태 : 죽음
+            enemyState = State.Dead;
+
+            // 클리어 판넬 출력
             GameClearPanel.SetActive(true);
         }
     }
 
     void DamagedEnd()
     {
+        // 데미지 받는게 끝났다면 추적모드
         enemyState = State.Chase;
-        //SetEnemyStateAnimator(State.Chase);
-        //// 데미지를 다 받았을 때, hp가 절반 남았을 떄 
-        //if(currentHp < maxHp / 2)
-        //{
-        //    enemyState = State.Defend;
-        //    return;
-        //}
-
-        //enemyState = State.Idle;
     }
 
     void AttackToPlayer()
     {
+        // 플레이어한테 공격
         distance = Vector3.Distance(transform.position, player.position);
+
+        // 공격거리보다 멀어졌을때는 데미지가 안들어감(공격모션은 함)
         if (distance > attackDistance)
             return;
-        //Debug.Log("AttackToPlayer!!!");
         player.GetComponent<Player>().Damaged(atk);
     }
 
     void AttackSkillToPlayer()
     {
-        Debug.Log("Skill!!!");
+        // 플레이어한테 공격
         distance = Vector3.Distance(transform.position, player.position);
+
+        // 공격거리보다 멀어졌을때는 데미지가 안들어감(공격모션은 함)
         if (distance > attackDistance)
             return;
         player.GetComponent<Player>().Damaged(atk * 2);
     }
 
+    void Dead()
+    {
+        // 죽음
+        anim.SetBool("Dead", true);
+    }
+
     void DeadEnd()
     {
+        // 죽는 애니메이션이 끝나면 사라짐.
         gameObject.SetActive(false);
     }
-
+        
     void AttackEnd()
     {
-        enemyState = State.Chase;
-        //SetEnemyStateAnimator(State.Chase);
+        // 공격 애니메이션이 끝났을 때
+        isAttack = false;
+        isCounterAttackAble = false;
     }
-
-    //public void SetEnemyStateAnimator(State newState)
-    //{
-    //    // 현재랑 같으면 넘어감
-    //    if (enemyState == newState)
-    //        return;
-
-    //    enemyState = newState;
-
-    //    anim.SetBool("isWalk", false);
-
-    //    // 상태에 맞는 애니메이터 파라미터 설정
-    //    switch (newState)
-    //    {
-    //        case State.Idle:
-    //            break;
-    //        case State.Chase:
-    //            anim.SetBool("isWalk", true);
-    //            break;
-    //        case State.Attack:
-    //            anim.SetBool("Attack", true);
-    //            break;
-    //        case State.Defend:
-    //            {
-    //                anim.SetTrigger("Defend");
-    //                anim.SetBool("isDefend", true);
-    //            }
-    //            break;
-    //        case State.Damage:
-    //            anim.SetTrigger("Damage");
-    //            break;
-    //        case State.Dead:
-    //            anim.SetBool("Dead", true);
-    //            break;
-    //    }
-    //}
 }
