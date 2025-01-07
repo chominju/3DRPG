@@ -17,6 +17,8 @@ public class PlayerAttack : MonoBehaviour
 
     bool isAttackToEnemy;
 
+    bool isAttackAnimEnd;
+
     /* 공격관련 애니메이션 이벤트 순서
      * -> ComboEnable
      * -> ComboDisable
@@ -31,14 +33,21 @@ public class PlayerAttack : MonoBehaviour
     {
         handColliders = new ArrayList();
         weaponType = PlayerWeaponChange.WeaponType.None;
-        SetIsAttackToEnemy(false);
+        //SetIsAttackToEnemy(false);
         anim = GetComponent<Animator>();
+
+        isAttackAnimEnd = false;
     }
 
     public void Attack()
     {
         // 공격 버튼을 눌렀을 때
-        //Debug.Log("weaponType : " + weaponType);
+
+        if (isComboEnable)
+            isComboExist = true;
+
+
+
         playerState = GetComponent<Player>().GetPlayerState();
         /* 공격이 불가능한 경우
         - 점프중
@@ -53,8 +62,6 @@ public class PlayerAttack : MonoBehaviour
         GetComponent<Player>().SetPlayerStateAnimator(Player.State.Attack);
         anim.SetBool("isAttack", true);
         // 콤보입력이 가능 할때 공격키를 눌렀는지
-        if (isComboEnable)
-            isComboExist = true;
     }
 
 
@@ -74,13 +81,10 @@ public class PlayerAttack : MonoBehaviour
 
     public void ComboExist()
     {
-        // 콤보가 존재하는지
-
         // 콤보가 존재하지않을 때
         if (isComboExist == false)
             return;
 
-        // 콤보가 존재하면 값을 다시 false로 바꾸고 콤보인데스 증가
         // 애니메이터의 트리거를 실행
         isComboExist = false;
 
@@ -90,16 +94,16 @@ public class PlayerAttack : MonoBehaviour
     public void AttackEnd()
     {
         // 공격이 끝났을 때
-        SetIsAttackToEnemy(false);
         anim.SetBool("isAttack", false);
         if (isComboExist == false)
         {
             // 콤보가 존재하지 않을 때
             // 기본으로 변경
-            // 장착중인 무기(맨손) 박스 콜라이더들을 전부 다시 비활성화(평상시에는 충돌체크 안함)
+            // 장착중인 무기(맨손) 박스 콜라이더들을 전부 다시 비활성화
+            // (평상시에는 충돌체크 안함)
             GetComponent<Player>().SetPlayerStateAnimator(Player.State.Idle);
 
-            // 맨손 콜라이더 갯수가 0개가 아니라면
+            // 맨손 콜라이더가 활성화 상태
             if (handColliders.Count != 0)
             {
                 // 맨손 콜라이더를 비활성화
@@ -108,7 +112,7 @@ public class PlayerAttack : MonoBehaviour
                     hand.enabled = false;
                 }
             }
-            // 무기콜라이더가 null이 아니라면
+            // 무기콜라이더 활성화 상태
             if (weaponCollider != null)
             {
                 // 무기 콜라이더를 비활성화
@@ -116,7 +120,7 @@ public class PlayerAttack : MonoBehaviour
             }
 
         }
-
+        
 
     }
 
@@ -129,8 +133,8 @@ public class PlayerAttack : MonoBehaviour
     void AttackToEnemy()
     {
         // 공격 애니메이션 도중에 적에게 공격이 가능한 모션일 때
-        SetIsAttackToEnemy(false);
-
+        //SetIsAttackToEnemy(false);
+        isAttackAnimEnd = false;
         // 적 리스트 초기화
         if (handColliders.Count != 0)
         {
@@ -210,12 +214,21 @@ public class PlayerAttack : MonoBehaviour
         }
     }
 
-
-    public void SetIsAttackToEnemy(bool attack)
+    public void AttackAbleAnimEnd()
     {
-        // 적을 이미 공격한 상태 변경
-        isAttackToEnemy = attack;
+        isAttackAnimEnd = true;
     }
+
+    public bool GetAttackAbleAnimEnd()
+    {
+        return isAttackAnimEnd;
+    }
+
+    //public void SetIsAttackToEnemy(bool attack)
+    //{
+    //    // 적을 이미 공격한 상태 변경
+    //    isAttackToEnemy = attack;
+    //}
 
     public bool GetIsAttack()
     {

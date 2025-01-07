@@ -164,6 +164,7 @@ public class Enemy : MonoBehaviour
 
             if (currentAttackCoolTime <= 0.0f)
             {
+                transform.LookAt(player.transform.position);
                 currentSkillCount++;
                 anim.SetTrigger("Attack");
                 if(currentSkillCount >= skillCount)
@@ -232,8 +233,14 @@ public class Enemy : MonoBehaviour
         }
         else
         {
-            EnemyManager.GetInstance().AddEnmeyKillCount();
-            anim.SetTrigger("Dead");
+            if (enemyState != State.Dead)
+            {
+                enemyState = State.Dead;
+                anim.SetTrigger("Dead");
+                EnemyManager.GetInstance().AddEnmeyKillCount();
+
+
+            }
         }
     }
 

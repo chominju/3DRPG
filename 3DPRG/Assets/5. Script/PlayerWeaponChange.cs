@@ -62,6 +62,8 @@ public class PlayerWeaponChange : MonoBehaviour
     {
         if (player.GetComponent<Player>().GetPlayerState() != Player.State.Idle)
             return;
+
+        player.GetComponent<Player>().OffSprint();
         // 클릭한게 쉴드라면
         if (clickType == WeaponType.Shield)
         {
@@ -77,6 +79,7 @@ public class PlayerWeaponChange : MonoBehaviour
             isSwordEqip = false;
             isAxeEqip = false;
             isMaceEqip = false;
+            isShieldEqip = false;
 
             // 기존에 누른 무기가 같을 때
             if ((currentWeapon == clickType))
@@ -117,7 +120,7 @@ public class PlayerWeaponChange : MonoBehaviour
     void SetActiveWeapon()
     {
         // 무기의 활성화 상태를 업데이트
-        swordWeapon.SetActive(isSwordEqip);
+        swordWeapon.SetActive(isSwordEqip); 
         axeWeapon.SetActive(isAxeEqip);
         maceWeapon.SetActive(isMaceEqip);
         shieldWeapon.SetActive(isShieldEqip);
@@ -141,6 +144,7 @@ public class PlayerWeaponChange : MonoBehaviour
         maceButton.GetComponent<Image>().color = Color.white;
         shieldButton.GetComponent<Image>().color = Color.white;
 
+
         switch (currentWeapon)
         {
             case WeaponType.Sword:
@@ -156,6 +160,11 @@ public class PlayerWeaponChange : MonoBehaviour
                 break;
         }
 
+
+        switch(currentWeapon)
+        {
+        }
+
         if(isShieldEqip)
             shieldButton.GetComponent<Image>().color = Color.gray;
     }
@@ -165,7 +174,7 @@ public class PlayerWeaponChange : MonoBehaviour
 
 
     // 이전버전
-
+        
     //// Start is called before the first frame update
     //void Start()
     //{

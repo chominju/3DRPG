@@ -28,12 +28,14 @@ public class EnemyManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        // AppearBoss();
+
         if (instance == null)
             instance = this;
         // 오브젝트 풀링 초기화
         enemyPool = new ObjectPool<GameObject>(CreatePooledEnemy, OnTakeFromPool, OnReturnedToPool, OnDestroyPoolObject, collectionChecks, 10, maxPoolSize);
 
-        for (index =0; index < maxPoolSize; index++)
+        for (index = 0; index < maxPoolSize; index++)
         {
             GameObject enemy = CreatePooledEnemy();
             enemyPool.Release(enemy);
@@ -44,8 +46,9 @@ public class EnemyManager : MonoBehaviour
     }
 
 
-    public static  EnemyManager GetInstance()
+    public static  EnemyManager GetInstance()   
     {
+
         return instance;
     }
 
@@ -101,13 +104,15 @@ public class EnemyManager : MonoBehaviour
         boss.SetActive(true);
         GameObject character =  GameObject.Find("Character");
         character.transform.position = new Vector3(-17.0f, 0.45f, 7.73f);
-
-        boss.transform.LookAt(character.transform.position);
         character.transform.LookAt(boss.transform.position);
+        boss.transform.LookAt(character.transform.position);
+
+
+        GameObject player = GameObject.Find("Player");
+        player.transform.localEulerAngles = new Vector3(0.0f, 0.0f, 0.0f);
 
         GameObject cameraArm = GameObject.Find("CameraArm");
-        cameraArm.transform.LookAt(character.transform.position);
-
+        cameraArm.transform.localEulerAngles = new Vector3(0.0f, 0.0f, 0.0f);
 
     }
 

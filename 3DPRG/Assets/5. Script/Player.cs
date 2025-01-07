@@ -128,6 +128,13 @@ public class Player : MonoBehaviour
         }
     }
 
+    public void OffSprint()
+    {
+        speed = 5f; // 이동 속도
+        anim.SetBool("isSprint", false);
+        sprintButton.GetComponent<Image>().color = Color.white;
+    }
+
     public void Sprint()
     {
         if (anim.GetBool("isSprint") == false)
@@ -193,10 +200,20 @@ public class Player : MonoBehaviour
         if ((jumpCurrentCount >= jumpMaxCount) || (playerState == State.Attack) || (playerState == State.DiveRoll) || (playerState == State.Damage) || (playerState == State.Down) || (playerState == State.Dead))
             return;
 
-        if (getJoystick.GetComponent<Joystick>().GetIsInput())
-            isJumpClickFirst = false;   // 이동키 + 점프(이동하면서 점프)
-        else
-            isJumpClickFirst = true;    // 점프 + 이동키(제자리 점프)
+        // 점프중이 아닐 때
+        if (playerState != State.Jump)
+        {
+            if (getJoystick.GetComponent<Joystick>().GetIsInput())
+            {
+                Debug.Log("Jump222222");
+                isJumpClickFirst = false;   // 이동키 + 점프(이동하면서 점프)
+            }
+            else
+            {
+                Debug.Log("Jump111111");
+                isJumpClickFirst = true;    // 점프 + 이동키(제자리 점프)
+            }
+        }
 
         SetPlayerStateAnimator(State.Jump);
 
@@ -234,12 +251,13 @@ public class Player : MonoBehaviour
         if (playerState == State.Jump)
         {
             // 위로 올라가는 중이면 제외
-            if (character.GetComponent<Rigidbody>().velocity.y >= 0.0f)
+            if (character.GetComponent<Rigidbody>().velocity.y >= -1.0f)
                 return;
             if (IsPlayerOnGround())
             {
+                Debug.Log("velocity : " + character.GetComponent<Rigidbody>().velocity.y);
                 // 땅에 닿는 위치인가?
-                anim.SetBool("isOnGround", true);
+                OnGround();
             }
             //if (rb.velocity.y >= 0.0f)
             //    return;

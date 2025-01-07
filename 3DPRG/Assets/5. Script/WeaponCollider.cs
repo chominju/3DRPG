@@ -53,6 +53,9 @@ public class WeaponCollider : MonoBehaviour
 
     private void OnTriggerStay(Collider other)
     {
+        if (player.GetComponent<PlayerAttack>().GetAttackAbleAnimEnd())
+            return;
+
         // 공격이 가능한 것인지 (불가능하다면 return)
         //if (player.GetComponent<PlayerAttack>().GetIsAttack())
         //    return;
@@ -65,7 +68,7 @@ public class WeaponCollider : MonoBehaviour
             }
             // 트리거한 대상이 적이라면 데미지를 입힙니다.
             enemyList.Add(other.gameObject);
-            player.GetComponent<PlayerAttack>().SetIsAttackToEnemy(true);
+            //player.GetComponent<PlayerAttack>().SetIsAttackToEnemy(true);
             other.gameObject.GetComponent<Enemy>().Damaged(atk);
         }
 
@@ -78,7 +81,7 @@ public class WeaponCollider : MonoBehaviour
             }
             // 트리거한 대상이 적이라면 데미지를 입힙니다.
             enemyList.Add(other.gameObject);
-            player.GetComponent<PlayerAttack>().SetIsAttackToEnemy(true);
+           // player.GetComponent<PlayerAttack>().SetIsAttackToEnemy(true);
             other.gameObject.GetComponent<Boss>().Damaged(atk);
         }
 

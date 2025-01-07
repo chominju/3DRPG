@@ -203,18 +203,6 @@ public class PlayerMove : MonoBehaviour
                 // ¶¥¿¡ ´ê´Â À§Ä¡ÀÎ°¡?
                 anim.SetBool("isOnGround", true);
             }
-            //if (rb.velocity.y >= 0.0f)
-            //    return;
-            //if(IsPlayerOnGround())
-            //{
-            //    anim.SetBool("isGround", true);
-            //    //anim.SetBool("isJump", false);
-            //    jumpCount = 0;
-            //}
-            //else
-            //{
-            //    anim.SetBool("isGround", false);
-            //}
         }
     }
 

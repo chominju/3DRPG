@@ -83,7 +83,7 @@ public class Boss : MonoBehaviour
         currentSkillCount = 0;
 
         defendCoolTime = 30.0f;
-        currentDefendCoolTime = 0.0f;
+        currentDefendCoolTime = defendCoolTime;
         recoveryHpCoolTime = 1.0f;
         recoveryHp = 20;
         currentRecoveryHpCoolTime = 0.0f;
@@ -202,10 +202,10 @@ public class Boss : MonoBehaviour
         //  방어상태를 사용하지 않았다면
         if (!isUseDefendSkill)
         {
-            anim.SetTrigger("Defend");
-            anim.SetBool("isDefend", true);
             isUseDefendSkill = true;
             isDefendSkillAble = false;
+            anim.SetBool("isDefend", true);
+            anim.SetTrigger("Defend");
         }
 
         // 일정시간마다 회복
@@ -330,7 +330,7 @@ public class Boss : MonoBehaviour
     void Dead()
     {
         // 죽음
-        anim.SetBool("Dead", true);
+        anim.SetTrigger("Dead");
     }
 
     void DeadEnd()
